@@ -1,0 +1,3 @@
+Warning window.c: 1849  Pointer truncation when converting to unsigned short
+Warning window.c: 5453  static function is_shift_pressed is never used
+Warning window.c: 1922  static 'int function(void) is_shift_pressed' is not referenced

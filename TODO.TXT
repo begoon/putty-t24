@@ -1,0 +1,13 @@
+	/*
+	  KZM - stupid T24 patch	
+	*/
+
+    fprintf(stderr, "yeye\n");
+    switch (keysym) {
+      case PK_PF3: ldisc_send(term->ldisc, "\006\n", 2, 0); return;
+      default: break; /* else gcc warns `enum value not used' */
+    }
+
+	    if (keystate[VK_SHIFT] & 0x80) index += 12;
+	    if (keystate[VK_CONTROL] & 0x80) index += 24;
+
