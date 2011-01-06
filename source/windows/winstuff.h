@@ -90,7 +90,7 @@ typedef struct backend_tag Backend;
 typedef struct terminal_tag Terminal;
 #endif
 
-#define PUTTY_REG_POS "Software\\SimonTatham\\PuTTYtestKZM"
+#define PUTTY_REG_POS "Software\\SimonTatham\\PuTTYt24"
 #define PUTTY_REG_PARENT "Software\\SimonTatham"
 #define PUTTY_REG_PARENT_CHILD "PuTTY"
 #define PUTTY_REG_GPARENT "Software"

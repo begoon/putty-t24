@@ -1,1 +1,0 @@
-putty.exe 2>error.txt

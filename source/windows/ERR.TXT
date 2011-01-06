@@ -1,3 +1,28 @@
+Warning c:\kzm\devt\putty\source\misc.c: 268  missing return value
+Warning c:\kzm\devt\putty\source\ssh.c: 5035  missing return value
+Warning c:\kzm\devt\putty\source\sshpubk.c: 515  missing return value
+Warning c:\kzm\devt\putty\source\sshzlib.c: 1029  missing return value
+Warning c:\kzm\devt\putty\source\timing.c: 227  missing return value
+Warning c:\kzm\devt\putty\source\tree234.c: 970  missing return value
+Warning c:\kzm\devt\putty\source\wcwidth.c: 196  overflow in short comparison with constant 131072
+Warning c:\kzm\devt\putty\source\wcwidth.c: 196  overflow in short comparison with constant 196605
+Warning c:\kzm\devt\putty\source\wcwidth.c: 197  overflow in short comparison with constant 196608
+Warning c:\kzm\devt\putty\source\wcwidth.c: 197  overflow in short comparison with constant 262141
+Warning windlg.c: 824  missing return value
 Warning window.c: 1849  Pointer truncation when converting to unsigned short
-Warning window.c: 5453  static function is_shift_pressed is never used
+Warning window.c: 5588  static function is_shift_pressed is never used
 Warning window.c: 1922  static 'int function(void) is_shift_pressed' is not referenced
+Warning winnet.c: 252  assignment of function pointers with different attributes
+Warning winnet.c: 253  assignment of function pointers with different attributes
+Warning winnet.c: 254  assignment of function pointers with different attributes
+Warning winnet.c: 255  assignment of function pointers with different attributes
+Warning winnet.c: 256  assignment of function pointers with different attributes
+Warning winnet.c: 1631  static function IN6_IS_ADDR_LINKLOCAL is never used
+Warning winnet.c: 1631  static function IN6_IS_ADDR_SITELOCAL is never used
+Warning winnet.c: 1631  static function IN6_IS_ADDR_V4MAPPED is never used
+Warning winnet.c: 1631  static function IN6_IS_ADDR_V4COMPAT is never used
+Warning winnet.c: 1631  static function IN6_IS_ADDR_MC_NODELOCAL is never used
+Warning winnet.c: 1631  static function IN6_IS_ADDR_MC_LINKLOCAL is never used
+Warning winnet.c: 1631  static function IN6_IS_ADDR_MC_SITELOCAL is never used
+Warning winnet.c: 1631  static function IN6_IS_ADDR_MC_ORGLOCAL is never used
+Warning winnet.c: 1631  static function IN6_IS_ADDR_MC_GLOBAL is never used
