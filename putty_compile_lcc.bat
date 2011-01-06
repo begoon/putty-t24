@@ -1,6 +1,6 @@
-rem turn optimization off!
+set LCC=c:\lcc
+set PATH=%LCC%\bin;%PATH%
+set INCLUDE=%LCC%\include;%INCLUDE%
+set LIB=%LCC%\lib;%LIB
 cd source\windows
-set INCLUDE=C:\kzm\tools\lcc\include;%INCLUDE%
-set PATH=C:\kzm\tools\lcc\bin;%PATH%
-set LIB=C:\kzm\tools\lcc\lib;%LIB
-make 2>ERR.TXT
+make -f Makefile.lcc "COMPAT=-DNO_IPV6 -DNO_MULTIMON" putty.exe && copy *.exe ..\..
