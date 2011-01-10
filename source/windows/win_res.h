@@ -13,6 +13,7 @@
 #define IDD_ABOUTBOX     111
 #define IDD_RECONF       112
 #define IDD_LICENCEBOX   113
+#define IDD_SEARCHBOX    114
 
 #define IDN_LIST        1001
 #define IDN_COPY        1002
@@ -23,6 +24,8 @@
 #define IDA_TEXT2       1004
 #define IDA_LICENCE     1005
 #define IDA_WEB         1006
+#define IDA_TEXT3       1007
+#define IDA_SEARCH      1008
 
 #define IDC_TAB         1001
 #define IDC_TABSTATIC1  1002

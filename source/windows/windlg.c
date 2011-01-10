@@ -46,6 +46,8 @@ static int nevents = 0, negsize = 0;
 
 extern Config cfg;		       /* defined in window.c */
 
+extern char t24_search_word[1024];     /* defined in window.c */
+
 #define PRINTER_DISABLED_STRING "None (printing disabled)"
 
 void force_normal(HWND hwnd)
@@ -219,6 +221,34 @@ static int CALLBACK AboutProc(HWND hwnd, UINT msg,
 	    ShellExecute(hwnd, "open",
 			 "http://www.chiark.greenend.org.uk/~sgtatham/putty/",
 			 0, 0, SW_SHOWDEFAULT);
+	    return 0;
+	}
+	return 0;
+      case WM_CLOSE:
+	EndDialog(hwnd, TRUE);
+	return 0;
+    }
+    return 0;
+}
+
+static int CALLBACK SearchProc(HWND hwnd, UINT msg,
+			       WPARAM wParam, LPARAM lParam)
+{
+    char *str;
+
+    switch (msg) {
+      case WM_INITDIALOG:
+	SetDlgItemText(hwnd, IDA_SEARCH, t24_search_word);
+	return 1;
+      case WM_COMMAND:
+	switch (LOWORD(wParam)) {
+	  case IDOK: {
+	    GetDlgItemText(hwnd, IDA_SEARCH, t24_search_word, sizeof(t24_search_word));
+	    for (char* ptr = t24_search_word; *ptr; ++ptr)
+		*ptr = toupper(*ptr);
+	  }
+	  case IDCANCEL:
+	    EndDialog(hwnd, TRUE);
 	    return 0;
 	}
 	return 0;
@@ -608,6 +638,14 @@ void modal_about_box(HWND hwnd)
 {
     EnableWindow(hwnd, 0);
     DialogBox(hinst, MAKEINTRESOURCE(IDD_ABOUTBOX), hwnd, AboutProc);
+    EnableWindow(hwnd, 1);
+    SetActiveWindow(hwnd);
+}
+
+void modal_input_t24_search_word(HWND hwnd)
+{
+    EnableWindow(hwnd, 0);
+    DialogBox(hinst, MAKEINTRESOURCE(IDD_SEARCHBOX), hwnd, SearchProc);
     EnableWindow(hwnd, 1);
     SetActiveWindow(hwnd);
 }

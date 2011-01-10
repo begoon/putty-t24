@@ -625,7 +625,7 @@ void load_open_settings(void *sesskey, Config *cfg)
     gppi(sesskey, "TelnetRet", 1, &cfg->telnet_newline);
     gppi(sesskey, "LocalEcho", AUTO, &cfg->localecho);
     gppi(sesskey, "LocalEdit", AUTO, &cfg->localedit);
-    gpps(sesskey, "Answerback", "", cfg->answerback,          /* KZM2: "PuTTY" is no more a default answerback */
+    gpps(sesskey, "Answerback", "", cfg->answerback, 
 	 sizeof(cfg->answerback));
     gppi(sesskey, "AlwaysOnTop", 0, &cfg->alwaysontop);
     gppi(sesskey, "FullScreenOnAltEnter", 0, &cfg->fullscreenonaltenter);

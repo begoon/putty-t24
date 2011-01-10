@@ -1371,7 +1371,8 @@ void setup_config_box(struct controlbox *b, int midsession,
 		      dlg_stdradiobutton_handler,
 		      I(offsetof(Config, funky_type)),
 		      "ESC[n~", I(0), "Linux", I(1), "Xterm R6", I(2),
-		      "VT400", I(3), "VT100+", I(4), "SCO", I(5), "T24", I(6), NULL);
+		      "VT400", I(3), "VT100+", I(4), "SCO", I(5), "T24", I(6), 
+		      NULL);
 
     s = ctrl_getset(b, "Terminal/Keyboard", "appkeypad",
 		    "Application keypad settings:");

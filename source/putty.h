@@ -701,7 +701,6 @@ void do_scroll(Context, int, int, int);
 #endif
 void set_title(void *frontend, char *);
 void set_icon(void *frontend, char *);
-void kzm_get_t24_line(int, unsigned char *);         /* KZM2 */
 void set_sbar(void *frontend, int, int, int);
 Context get_ctx(void *frontend);
 void free_ctx(Context);

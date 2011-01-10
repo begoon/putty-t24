@@ -198,6 +198,9 @@ static int compose_state = 0;
 
 static UINT wm_mousewheel = WM_MOUSEWHEEL;
 
+char t24_search_word[1024] = {0};
+static void t24_get_line(int line_no, unsigned char *t24_line);
+
 /* Dummy routine, only required in plink. */
 void ldisc_update(void *frontend, int echo, int edit)
 {
@@ -3030,19 +3033,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 		shift_pressed=LOWORD(wParam) & MK_SHIFT;
 		control_pressed=LOWORD(wParam) & MK_CONTROL;
 
-/*  KZM2  */
-
-		if (cfg.funky_type == FUNKY_T24 && control_pressed == 8 && wheel_accumulator < 0 ) {
+		if (cfg.funky_type == FUNKY_T24 && control_pressed == 8 && wheel_accumulator < 0 )
 		   ldisc_send(ldisc, "\x06\n", 2, 1);
 
-		}
-
-		if (cfg.funky_type == FUNKY_T24 && control_pressed == 8 && wheel_accumulator > 0 ) {
+		if (cfg.funky_type == FUNKY_T24 && control_pressed == 8 && wheel_accumulator > 0 )
 		   ldisc_send(ldisc, "\x02\n", 2, 1);
-		}
-
-/*  KZM2 end */
-
 	    } else {
 		BYTE keys[256];
 		wheel_accumulator += (int)wParam;
@@ -3079,12 +3074,12 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 			       TO_CHR_Y(Y_POS(lParam)), shift_pressed,
 			       control_pressed, is_alt_pressed());
 		} else {
-		    if (cfg.funky_type != FUNKY_T24 || control_pressed != 8) {     /* if by KZM2 */
-		    /* trigger a scroll */
-		    term_scroll(term, 0,
-				b == MBT_WHEEL_UP ?
-				-term->rows / 2 : term->rows / 2);
-			}	
+		    if (cfg.funky_type != FUNKY_T24 || control_pressed != 8) {
+			/* trigger a scroll */
+			term_scroll(term, 0,
+				    b == MBT_WHEEL_UP ?
+				    -term->rows / 2 : term->rows / 2);
+		    }	
 		}
 	    }
 	    return 0;
@@ -4178,95 +4173,61 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
 	}
 
 /*
-
-    C.U = CHARX(21) ;* F1
-    C.B = CHARX(2)  ;* F2
-    C.F = CHARX(6)  ;* F3
-    C.E = CHARX(5)  ;* F4
-    C.V = CHARX(22) ;* F5
-    C.W = CHARX(23) ;* F6
-    C.T = CHARX(20) ;* F7
-
-*/
-
-	if (cfg.funky_type == FUNKY_T24 &&     /* T24 - KZM */
-	    code >= 11 && code <= 15 || code == 17 || code == 18 || code == 19) {
+ * C.U = CHARX(21) ;* F1
+ * C.B = CHARX(2)  ;* F2
+ * C.F = CHARX(6)  ;* F3
+ * C.E = CHARX(5)  ;* F4
+ * C.V = CHARX(22) ;* F5
+ * C.W = CHARX(23) ;* F6
+ * C.T = CHARX(20) ;* F7
+ */
+	if (cfg.funky_type == FUNKY_T24 &&     /* T24 function keys */
+	    code >= 11 && code <= 20) {        /* F1-F9 */
+	    int enter = 1;
 	    switch (wParam) {
-	      case VK_F1: *p++ = '\x15'; break;
-	      case VK_F2: *p++ = '\x02'; break;
-	      case VK_F3: *p++ = '\x06'; break;
-	      case VK_F4: *p++ = '\x05'; break;
-	      case VK_F5: *p++ = '\x16'; break;
-	      case VK_F6: *p++ = '\x17'; break;
-	      case VK_F7: *p++ = '\x14'; break;
-	      case VK_F8:
+		case VK_F1: *p++ = '\x15'; break;
+		case VK_F2: *p++ = '\x02'; break;
+		case VK_F3: *p++ = '\x06'; break;
+		case VK_F4: *p++ = '\x05'; break;
+		case VK_F5: *p++ = '\x16'; break;
+		case VK_F6: *p++ = '\x17'; break;
+		case VK_F7: *p++ = '\x14'; break;
+		case VK_F8:
+		    modal_input_t24_search_word(hwnd);
+		    enter = 0;
+		    break;
+		case VK_F9: {
+		    unsigned char t24_line[term->cols];
+		    size_t word_sz = strlen(t24_search_word);
+		    size_t i;
+		    if (word_sz == 0) return p - output;
 
-	         unsigned char vv_line[term->cols];
+	            char* found = 0; 
+		    for (i = 4; i <= 19; i++) {
+			t24_get_line(i, t24_line);
+			found = strstr(t24_line, t24_search_word);
+			if (found != NULL) break;
+		    }
 
-	         kzm_get_t24_line(22, vv_line);
-	         
-	         unsigned char vv_search_word[term->cols - 8];
-	         int vv_i = 0;
-	         int vv_cursx = term->curs.x - 8;
-	         
-	         while (vv_i < vv_cursx)
-	            {
-	         	vv_search_word[vv_i] = vv_line[vv_i+8];
-	         	vv_i ++;
-	         	}
-         	
-         	vv_search_word[vv_i] = '\0';
-
-         	if (vv_i == 0) return p - output;
-         	
-         	char *vv_ptr;
-         	for (vv_i = 4; vv_i <= 19; vv_i++)
-	         	{
-	         	kzm_get_t24_line(vv_i, vv_line);
-	         	vv_ptr = strstr(vv_line, vv_search_word);
-	         	if (vv_ptr != NULL)
-	         		{ 
-	         		break;
-	         		}
-	         	}
-
-	         int vv_j;
-
-	      	for (vv_j = 1; vv_j <= strlen(vv_search_word); vv_j++)
-	      	   {
-	  			   *p++ = (cfg.bksp_is_delete ? 0x7F : 0x08);
-	  			   }
-
-	         if (vv_ptr != NULL)
-	         	{ 
-	  				
-	  				term_deselect(term);
-	  				term->selstart.y = vv_i;
-	  				term->selend.y = vv_i;
-	  				term->selstart.x = vv_ptr - vv_line;
-	  				term->selend.x = vv_ptr - vv_line + strlen(vv_search_word);
-	  				term->selstate = SELECTED;
-			      term_update(term);
-	         	
-	         	} else {
-	         		p += sprintf((char *) p, " \x06\n");
-	         		for (vv_j = 0; vv_j < strlen(vv_search_word); vv_j++)
-		         	   {
-		  				   if (vv_search_word[vv_j] == '%') p += sprintf((char *) p, "%%");
-		  				   else *p++ = vv_search_word[vv_j];
-	  					   }
-
-	         	}
-				
-				return p - output;
-
+		    if (found) {
+			term_deselect(term);
+			term->selstart.y = i;
+	  		term->selend.y = i;
+			size_t offset = found - t24_line;
+	  		term->selstart.x = offset;
+			term->selend.x = offset + word_sz;
+			term->selstate = SELECTED;
+			term_update(term);
+		    } else {
+			p += sprintf((char *) p, " \x06\n");
+			return p - output;
+		    }	
+		}
 	    }
-	    *p++ = '\n';
+	    if (enter) *p++ = '\n';
 	    return p - output;
 	}
 
-/* KZM, KZM2 end */
-	
 	if ((term->vt52_mode || cfg.funky_type == FUNKY_VT100P) && code >= 11 && code <= 24) {
 	    int offt = 0;
 	    if (code > 15)
@@ -5530,58 +5491,53 @@ void agent_schedule_callback(void (*callback)(void *, void *, int),
     PostMessage(hwnd, WM_AGENT_CALLBACK, 0, (LPARAM)c);
 }
 
-/* KZM2  */
-void kzm_get_t24_line(int vv_line_no, unsigned char *vv_t24_line)
+/*
+ * This function gets a line from the terminal buffer and converts
+ * to a T24 format.
+ */
+static void t24_get_line(int line_no, unsigned char *t24_line)
 {
-	tree234 *vv_whichtree;
-	vv_whichtree = term->screen;
-	termline *vv_termline = index234(vv_whichtree, vv_line_no);
-	int vv_j;
-/* 	unsigned char vv_t24_line[term->cols]; */
-	unsigned char vv_chr;
-	for (vv_j = 0; vv_j <= term->cols; vv_j++) {
+    termline *termline = index234(term->screen, line_no);
+    int i;
+    for (i = 0; i < term->cols; i++) {
+	unsigned char ch = termline->chars[i].chr;
+	switch (ch) {
+	    case 352:
+		ch = 'S';
+		break;
+	    case 353:
+		ch = 'S';
+		break;
+	    case 272:
+		ch = 'D';
+		break;
+	    case 273:
+		ch = 'D';
+		break;
+	    case 268:
+		ch = 'C';
+		break;
+	    case 269:
+		ch = 'C';
+		break;
+	    case 262:
+		ch = 'C';
+		break;
+	    case 263:
+		ch = 'C';
+		break;
+	    case 381:
+		ch = 'Z';
+		break;
+	    case 382:
+		ch = 'Z';
+		break;
 
-	   switch (vv_termline->chars[vv_j].chr) {
-	      case 352:
-	         vv_t24_line[vv_j] = 'S';
-	         break;
-	      case 353:
-	         vv_t24_line[vv_j] = 'S';
-	         break;
-	      case 272:
-	         vv_t24_line[vv_j] = 'D';
-	         break;
-	      case 273:
-	         vv_t24_line[vv_j] = 'D';
-	         break;
-	      case 268:
-	         vv_t24_line[vv_j] = 'C';
-	         break;
-	      case 269:
-	         vv_t24_line[vv_j] = 'C';
-	         break;
-	      case 262:
-	         vv_t24_line[vv_j] = 'C';
-	         break;
-	      case 263:
-	         vv_t24_line[vv_j] = 'C';
-	         break;
-	      case 381:
-	         vv_t24_line[vv_j] = 'Z';
-	         break;
-	      case 382:
-	         vv_t24_line[vv_j] = 'Z';
-	         break;
-
-         default:
-            vv_chr = vv_termline->chars[vv_j].chr;
-            if islower(vv_chr) vv_t24_line[vv_j] = toupper(vv_chr);
-            else vv_t24_line[vv_j] = vv_chr;
-
-	   }
+	    default:
+		if (islower(ch))
+		   ch = toupper(ch);
 	}
-	vv_t24_line[vv_j] = '\0';
-      
-	return;
-
+	t24_line[i] = ch;
+    }
+    t24_line[i] = 0;
 }

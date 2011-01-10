@@ -5,7 +5,20 @@
 #ifndef PUTTY_RCSTUFF_H
 #define PUTTY_RCSTUFF_H
 
+#ifdef __LCC__
 #include <win.h>
+#else
+
+/* Some compilers, like Borland, don't have winresrc.h */
+#ifndef NO_WINRESRC_H
+#ifndef MSVC4
+#include <winresrc.h>
+#else
+#include <winres.h>
+#endif
+#endif
+
+#endif /* end #ifdef __LCC__ */
 
 /* Some systems don't define this, so I do it myself if necessary */
 #ifndef TCS_MULTILINE

@@ -90,7 +90,7 @@ typedef struct backend_tag Backend;
 typedef struct terminal_tag Terminal;
 #endif
 
-#define PUTTY_REG_POS "Software\\SimonTatham\\PuTTYt24"
+#define PUTTY_REG_POS "Software\\SimonTatham\\PuTTY_T24"
 #define PUTTY_REG_PARENT "Software\\SimonTatham"
 #define PUTTY_REG_PARENT_CHILD "PuTTY"
 #define PUTTY_REG_GPARENT "Software"
@@ -390,6 +390,7 @@ void showeventlog(HWND);
 void showabout(HWND);
 void force_normal(HWND hwnd);
 void modal_about_box(HWND hwnd);
+void modal_t24_search_box(HWND hwnd);
 void show_help(HWND hwnd);
 
 /*
