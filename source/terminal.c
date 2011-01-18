@@ -109,6 +109,7 @@ static void scroll(Terminal *, int, int, int, int);
 #ifdef OPTIMISE_SCROLL
 static void scroll_display(Terminal *, int, int, int);
 #endif /* OPTIMISE_SCROLL */
+static void t24_basic_highlight(termchar *line, int cols);
 
 static termline *newline(Terminal *term, int cols, int bce)
 {
@@ -4895,6 +4896,8 @@ static void do_paint(Terminal *term, Context ctx, int may_optimise)
 				  term->disptext[i]->lattr);
 	term->disptext[i]->lattr = ldata->lattr;
 
+	t24_basic_highlight(newline, term->cols);
+
 	for (j = 0; j < term->cols; j++) {
 	    unsigned long tattr, tchar;
 	    int break_run, do_copy;
@@ -6526,4 +6529,454 @@ int term_get_userpass_input(Terminal *term, prompts_t *p,
 	p->data = NULL;
 	return +1; /* all done */
     }
+}
+
+#include <regexp.h>
+
+enum AnsiColor {
+  clBlack  = 0,
+  clRed    = 1,
+  clGreen  = 2,
+  clYellow = 3,
+  clBlue   = 4,
+  clPurple = 5,
+  clCyan   = 6,
+  clWhite  = 7
+};
+
+struct token_t {
+  char* re;              /* regexp */
+  unsigned long color;   /* color and attributes */
+};
+
+struct token_t tokens[] = {
+  /* Entire line comment */
+  { "[0-9][0-9][0-9][0-9] [ \t]*(\\*.*)", clYellow },
+
+  /* Ending comment */
+  { "(;\\*.*)", clYellow },
+
+  /* Double quoted string */
+  { "(\"[^\"]*\")", clYellow | ATTR_BOLD },
+
+  /* Single quoted string */
+  { "('[^']*')", clYellow | ATTR_BOLD },
+
+  /* Label */
+  { "[0-9][0-9][0-9][0-9] ([a-zA-Z_\\.]+\\:)", clBlue | ATTR_BOLD },
+
+  /* System variable */
+  { "(@\\([a-zA-Z_\\.]\\)+)", clCyan },
+
+  /* System variable @() */
+  { "(@[a-zA-Z_\\.]+)", clCyan },
+
+  /* Control operators */
+  { "("
+    "BEGIN|"
+    "BREAK|"
+    "CALL|"
+    "CASE|"
+    "CHAIN|"
+    "CONTINUE|"
+    "DEFCE|"
+    "DEFC|"
+    "DEFFUN|"
+    "DO|"
+    "ELSE|"
+    "FSUB|"
+    "FUNCTION|"
+    "GOSUB|"
+    "GOTO|"
+    "IF|"
+    "LOOP|"
+    "NEXT|"
+    "ONGOTO|"
+    "RETURN|"
+    "THEN|"
+    "END"
+    ")", clRed | ATTR_BOLD
+  },
+
+  /* Operators and functions */
+  { "("
+    "COL2|"
+    "ABORT|"
+    "ABSS|"
+    "ABS|"
+    "ADDS|"
+    "ALPHA|"
+    "ANDS|"
+    "ASCII|"
+    "ASSIGNED|"
+    "BITAND|"
+    "BITCHANGE|"
+    "BITCHECK|"
+    "BITLOAD|"
+    "BITNOT|"
+    "BITOR|"
+    "BITRESET|"
+    "BITSET|"
+    "BITTEST|"
+    "BITXOR|"
+    "BYTELEN|"
+    "CALLC|"
+    "CALLJ|"
+    "CALLONEXIT|"
+    "CALLdotNET|"
+    "CATALOG|"
+    "CATS|"
+    "CHANGETIMESTAMP|"
+    "CHANGE|"
+    "CHARS|"
+    "CHAR|"
+    "CHDIR|"
+    "CHECKSUM|"
+    "CLEARCOMMON|"
+    "CLEARDATA|"
+    "CLEARFILE|"
+    "CLEARINPUT|"
+    "CLEARSELECT|"
+    "CLEAR|"
+    "CLOSESEQ|"
+    "CLOSE|"
+    "COL1|"
+    "COLLECTDATA|"
+    "COMMON|"
+    "COMPARE|"
+    "CONVERT|"
+    "CONVERT|"
+    "COS|"
+    "COUNTS|"
+    "COUNT|"
+    "CREATE|"
+    "CRT|"
+    "CacheBucketList|"
+    "CacheClearAll|"
+    "CacheClearStats|"
+    "CacheClear|"
+    "CacheDelete|"
+    "CacheExists|"
+    "CacheGetOption|"
+    "CacheGet|"
+    "CacheKeyList|"
+    "CachePut|"
+    "CacheSetOption|"
+    "CacheStats|"
+    "DATA|"
+    "DATE|"
+    "DCOUNT|"
+    "DEBUG|"
+    "DECATALOG|"
+    "DECRYPT|"
+    "DELETE-CATALOG|"
+    "DELETELIST|"
+    "DELETESEQ|"
+    "DELETEU|"
+    "DELETE|"
+    "DEL|"
+    "DIMENSION|"
+    "DIR|"
+    "DIVS|"
+    "DIV|"
+    "DOWNCASE"
+    "DQUOTE"
+    "DROUND|"
+    "DTX|"
+    "DYNTOXML|"
+    "EBCDIC|"
+    "ECHO|"
+    "ENCRYPT|"
+    "ENTER|"
+    "EQS|"
+    "EQUATE|"
+    "EREPLACE|"
+    "EXECUTE|"
+    "EXIT|"
+    "EXP|"
+    "EXTRACT|"
+    "FADD|"
+    "FDIV|"
+    "FIELDS|"
+    "FIELD|"
+    "FILEINFO|"
+    "FILELOCK|"
+    "FILEUNLOCK|"
+    "FINDSTR|"
+    "FIND|"
+    "FLUSH|"
+    "FMTS|"
+    "FMT|"
+    "FOLD|"
+    "FOOTING|"
+    "FORMLIST|"
+    "GES|"
+    "GETCWD|"
+    "GETENV|"
+    "GETLIST|"
+    "GETUSERGROUP|"
+    "GETX|"
+    "GET|"
+    "GROUP|"
+    "HEADINGE|"
+    "HEADINGN|"
+    "HEADING|"
+    "HUSH|"
+    "ICONVS|"
+    "ICONV|"
+    "IFS|"
+    "INCLUDE|"
+    "INDEX|"
+    "INMAT|"
+    "INPUTCLEAR|"
+    "INPUTNULL|"
+    "INPUT|"
+    "INSERT|"
+    "INS|"
+    "INT|"
+    "IN|"
+    "IOCTL|"
+    "ISALNUM|"
+    "ISALPHA|"
+    "ISCNTRL|"
+    "ISDIGIT|"
+    "ISLOWER|"
+    "ISPRINT|"
+    "ISSPACE|"
+    "ISUPPER|"
+    "ITYPE|"
+    "JBASECOREDUMP|"
+    "JBASETHREADCreate|"
+    "JBASETHREADStatus|"
+    "JQLCOMPILE|"
+    "JQLEXECUTE|"
+    "JQLFETCH|"
+    "JQLGETPROPERTY|"
+    "JQLPUTPROPERTY|"
+    "KEYIN|"
+    "LATIN1|"
+    "LEFT|"
+    "LENDP|"
+    "LENS|"
+    "LEN|"
+    "LES|"
+    "LN|"
+    "LOCALDATE|"
+    "LOCALTIME|"
+    "LOCATE|"
+    "LOCK|"
+    "LOWER|"
+    "MAKETIMESTAMP|"
+    "MATBUILD|"
+    "MATCHES|"
+    "MATCHFIELD|"
+    "MATPARSE|"
+    "MATREADU|"
+    "MATREAD|"
+    "MATWRITEU|"
+    "MATWRITE|"
+    "MAT|"
+    "MAXIMUM|"
+    "MINIMUM|"
+    "MODS|"
+    "MOD|"
+    "MSLEEP|"
+    "MULS|"
+    "NEGS|"
+    "NES|"
+    "NOBUF|"
+    "NOTS|"
+    "NOT|"
+    "NULL|"
+    "NUMS|"
+    "NUM|"
+    "OBJEXCALLBACK|"
+    "OCONVS|"
+    "OCONV|"
+    "OPENDEV|"
+    "OPENINDEX|"
+    "OPENPATH|"
+    "OPENSEQ|"
+    "OPENSER|"
+    "OPEN|"
+    "ORS|"
+    "OSBREAD|"
+    "OSBWRITE|"
+    "OSCLOSE|"
+    "OSDELETE|"
+    "OSOPEN|"
+    "OSREAD|"
+    "OSWRITE|"
+    "OUT|"
+    "PAGE|"
+    "PAUSE|"
+    "PCPERFORM|"
+    "PERFORM|"
+    "PRECISION|"
+    "PRINTERR|"
+    "PRINTER|"
+    "PRINT|"
+    "PROCREAD|"
+    "PROCWRITE|"
+    "PROGRAM|"
+    "PROMPT|"
+    "PUTENV|"
+    "PWR|"
+    "QUOTE|"
+    "RAISE|"
+    "READBLK|"
+    "READLIST|"
+    "READL|"
+    "READNEXT|"
+    "READPREV|"
+    "READSELECT|"
+    "READSEQ|"
+    "READT|"
+    "READU|"
+    "READVL|"
+    "READVU|"
+    "READV|"
+    "READXML|"
+    "READ|"
+    "RECORDLOCKED|"
+    "REGEXP|"
+    "RELEASE|"
+    "REMOVE|"
+    "REPLACE|"
+    "REWIND|"
+    "RIGHT|"
+    "RND|"
+    "RQM|"
+    "RTNDATA|"
+    "SADD|"
+    "SDIV|"
+    "SEEK|"
+    "SELECT|"
+    "SENDX|"
+    "SEND|"
+    "SENTENCE|"
+    "SEQS|"
+    "SEQ|"
+    "SIN|"
+    "SLEEP|"
+    "SMUL|"
+    "SORT|"
+    "SOUNDEX|"
+    "SPACES|"
+    "SPACE|"
+    "SPLICE|"
+    "SPOOLER|"
+    "SQRT|"
+    "SQUOTE|"
+    "SSELECTN|"
+    "SSELECTV|"
+    "SSELECT|"
+    "SSUB|"
+    "STATUS|"
+    "STOP|"
+    "STRS|"
+    "STR|"
+    "SUBROUTINE|"
+    "SUBROUTINE|"
+    "SUBSTRINGS|"
+    "SUBS|"
+    "SUM|"
+    "SWAP|"
+    "TAN|"
+    "TIMEDATE|"
+    "TIMEDIFF|"
+    "TIMEOUT|"
+    "TIMESTAMP|"
+    "TIME|"
+    "TO|"
+    "TRANSABORT|"
+    "TRANSEND|"
+    "TRANSQUERY|"
+    "TRANSTART|"
+    "TRANS|"
+    "TRANS|"
+    "TRIMBS|"
+    "TRIMB|"
+    "TRIMFS|"
+    "TRIMF|"
+    "TRIM|"
+    "UDTEXECUTE|"
+    "UNASSIGNED|"
+    "UNIQUEKEY|"
+    "UNLOCK|"
+    "UPCASE|"
+    "UPCASE|"
+    "UTF8|"
+    "WAKE|"
+    "WEOFSEQ|"
+    "WEOF|"
+    "WHILE|"
+    "WRITEBLK|"
+    "WRITELIST|"
+    "WRITESEQF|"
+    "WRITESEQ|"
+    "WRITEU|"
+    "WRITEVU|"
+    "WRITEV|"
+    "WRITEXML|"
+    "WRITE|"
+    "XLATE|"
+    "XMLTODYN|"
+    "XMLTOXML|"
+    "XTD"
+    ")", clWhite | ATTR_BOLD },
+};
+
+static const int nb_tokens = sizeof(tokens) / sizeof(*tokens);
+
+static regexp* re_tokens[nb_tokens] = {0};
+
+static int t24_basic_color(int n, const char* line, termchar *newline)
+{
+  int i;
+  const int group = 1;
+  int offset = re_tokens[n]->startp[group] - line;
+  int size = re_tokens[n]->endp[group] - re_tokens[n]->startp[group];
+  for (i = offset; i < offset + size; ++i) {
+    const int cursor_mask = TATTR_ACTCURS | TATTR_PASCURS | TATTR_RIGHTCURS;
+    int cursor = newline[i].attr & cursor_mask;
+    newline[i].attr = tokens[n].color;
+    newline[i].attr |= cursor;
+  }
+  memset(re_tokens[n]->startp[group], 0xff, size);
+  assert(size != 0);
+  return size;
+}
+
+static void t24_basic_highlight(termchar *newline, int cols) 
+{
+  int i;
+
+  if (cols < 5) return;
+  
+  static char line[1024 * 8];
+  for (i = 0; i < cols; ++i) {
+    char c = newline[i].chr & 0xFF;
+    if (c >= 'a' && c <= 'z')
+      c = toupper(c);
+    line[i] = c;
+  }
+  line[cols] = 0;    
+
+  if (!isdigit(line[0]) || !isdigit(line[1]) || 
+      !isdigit(line[2]) || !isdigit(line[3]) ||
+      !isspace(line[4]))
+    return;
+
+  if (re_tokens[0] == 0) {
+    for (i = 0; i < nb_tokens; ++i)
+      assert(re_tokens[i] = regcomp(tokens[i].re));
+  }
+
+  for (i = 0; i < nb_tokens; ++i) {
+    int offset = 0;
+    while (regexec(re_tokens[i], line + offset)) {
+      offset += t24_basic_color(i, line, newline);
+    }
+  }
 }
