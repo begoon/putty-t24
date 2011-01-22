@@ -6551,16 +6551,16 @@ struct token_t {
 
 struct token_t tokens[] = {
   /* Entire line comment */
-  { "[0-9][0-9][0-9][0-9] [ \t]*(\\*.*)", clYellow },
-
-  /* Ending comment */
-  { "(;\\*.*)", clYellow },
+  { "[0-9][0-9][0-9][0-9] [ \t]*((\\*|!|//).*)", clYellow },
 
   /* Double quoted string */
   { "(\"[^\"]*\")", clYellow | ATTR_BOLD },
 
   /* Single quoted string */
   { "('[^']*')", clYellow | ATTR_BOLD },
+
+  /* Ending comment */
+  { "((;\\*|//).*)", clYellow },
 
   /* Label */
   { "[0-9][0-9][0-9][0-9] ([a-zA-Z_\\.]+\\:)", clBlue | ATTR_BOLD },
