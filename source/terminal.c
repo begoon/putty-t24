@@ -6559,6 +6559,9 @@ struct token_t tokens[] = {
   /* Single quoted string */
   { "('[^']*')", clYellow | ATTR_BOLD },
 
+  /* Slash quoted string */
+  { "(\\\\[^\\\\\]*\\\\)", clYellow | ATTR_BOLD },
+
   /* Ending comment */
   { "((;\\*|//).*)", clYellow },
 
