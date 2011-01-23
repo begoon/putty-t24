@@ -6546,64 +6546,47 @@ enum AnsiColor {
 
 struct token_t {
   char* re;              /* regexp */
+  int group;
   unsigned long color;   /* color and attributes */
+  char* values;          /* a list pre-defined values or NULL */
 };
 
 struct token_t tokens[] = {
   /* Entire line comment */
-  { "[0-9][0-9][0-9][0-9] [ \t]*((\\*|!|//).*)", clYellow },
+  { "^[ \t]*((\\*|!|//).*)", 1, clYellow, NULL },
 
   /* Double quoted string */
-  { "(\"[^\"]*\")", clYellow | ATTR_BOLD },
+  { "(\"[^\"]*\")", 1, clYellow | ATTR_BOLD, NULL },
 
   /* Single quoted string */
-  { "('[^']*')", clYellow | ATTR_BOLD },
+  { "('[^']*')", 1, clYellow | ATTR_BOLD, NULL },
 
   /* Slash quoted string */
-  { "(\\\\[^\\\\\]*\\\\)", clYellow | ATTR_BOLD },
+  { "(\\\\[^\\\\\]*\\\\)", 1, clYellow | ATTR_BOLD, NULL },
 
   /* Ending comment */
-  { "((;\\*|//).*)", clYellow },
+  { "((;\\*|//).*)$", 1, clYellow, NULL },
 
   /* Label */
-  { "[0-9][0-9][0-9][0-9] ([a-zA-Z_\\.]+\\:)", clBlue | ATTR_BOLD },
+  { "^([a-zA-Z_\\.]+\\:)", 1, clBlue | ATTR_BOLD, NULL },
 
   /* System variable */
-  { "(@\\([a-zA-Z_\\.]\\)+)", clCyan },
+  { "(@\\([a-zA-Z0-9_\\.$]+\\))", 1, clCyan, NULL },
 
-  /* System variable @() */
-  { "(@[a-zA-Z_\\.]+)", clCyan },
+  /* Cursor positioning */
+  { "((@)\\([ \t]*[a-zA-Z0-9_\\.$]+[ \t]*,[ \t]*[a-zA-Z0-9_\\.$]+[ \t]*\\))", 
+    2, clCyan, NULL },
 
-  /* Control operators */
-  { "("
-    "BEGIN|"
-    "BREAK|"
-    "CALL|"
-    "CASE|"
-    "CHAIN|"
-    "CONTINUE|"
-    "DEFCE|"
-    "DEFC|"
-    "DEFFUN|"
-    "DO|"
-    "ELSE|"
-    "FSUB|"
-    "FUNCTION|"
-    "GOSUB|"
-    "GOTO|"
-    "IF|"
-    "LOOP|"
-    "NEXT|"
-    "ONGOTO|"
-    "RETURN|"
-    "THEN|"
-    "END"
-    ")", clRed | ATTR_BOLD
-  },
+  /* System variable @NAME */
+  { "(@[a-zA-Z_\\.]+)", 1, clCyan, NULL },
+
+  /* Common */
+  { "COMMON[ \t]+/[ \t]*([a-zA-Z_$][a-zA-Z0-9_\\.$]*)[ \t]*/", 
+    1, clRed | ATTR_BOLD, NULL },
 
   /* Operators and functions */
-  { "("
-    "COL2|"
+  { "(^|[^a-zA-Z0-9_\\.$])([a-zA-Z_$][a-zA-Z0-9_\\.$]*)", 2, clRed | ATTR_BOLD, 
+    "|"
     "ABORT|"
     "ABSS|"
     "ABS|"
@@ -6612,6 +6595,7 @@ struct token_t tokens[] = {
     "ANDS|"
     "ASCII|"
     "ASSIGNED|"
+    "BEGIN|"
     "BITAND|"
     "BITCHANGE|"
     "BITCHECK|"
@@ -6622,13 +6606,17 @@ struct token_t tokens[] = {
     "BITSET|"
     "BITTEST|"
     "BITXOR|"
+    "BREAK|"
     "BYTELEN|"
     "CALLC|"
     "CALLJ|"
     "CALLONEXIT|"
     "CALLdotNET|"
+    "CALL|"
+    "CASE|"
     "CATALOG|"
     "CATS|"
+    "CHAIN|"
     "CHANGETIMESTAMP|"
     "CHANGE|"
     "CHARS|"
@@ -6644,9 +6632,11 @@ struct token_t tokens[] = {
     "CLOSESEQ|"
     "CLOSE|"
     "COL1|"
+    "COL2|"
     "COLLECTDATA|"
     "COMMON|"
     "COMPARE|"
+    "CONTINUE|"
     "CONVERT|"
     "CONVERT|"
     "COS|"
@@ -6672,6 +6662,9 @@ struct token_t tokens[] = {
     "DEBUG|"
     "DECATALOG|"
     "DECRYPT|"
+    "DEFCE|"
+    "DEFC|"
+    "DEFFUN|"
     "DELETE-CATALOG|"
     "DELETELIST|"
     "DELETESEQ|"
@@ -6679,20 +6672,26 @@ struct token_t tokens[] = {
     "DELETE|"
     "DEL|"
     "DIMENSION|"
+    "DIM|"
     "DIR|"
     "DIVS|"
     "DIV|"
     "DOWNCASE"
+    "DO|"
     "DQUOTE"
     "DROUND|"
     "DTX|"
     "DYNTOXML|"
     "EBCDIC|"
     "ECHO|"
+    "ELSE|"
     "ENCRYPT|"
+    "END|"
     "ENTER|"
     "EQS|"
     "EQUATE|"
+    "EQU|"
+    "EQ|"
     "EREPLACE|"
     "EXECUTE|"
     "EXIT|"
@@ -6712,7 +6711,10 @@ struct token_t tokens[] = {
     "FMT|"
     "FOLD|"
     "FOOTING|"
+    "FOR|"
     "FORMLIST|"
+    "FSUB|"
+    "FUNCTION|"
     "GES|"
     "GETCWD|"
     "GETENV|"
@@ -6720,7 +6722,11 @@ struct token_t tokens[] = {
     "GETUSERGROUP|"
     "GETX|"
     "GET|"
+    "GE|"
+    "GOSUB|"
+    "GOTO|"
     "GROUP|"
+    "GT|"
     "HEADINGE|"
     "HEADINGN|"
     "HEADING|"
@@ -6728,6 +6734,7 @@ struct token_t tokens[] = {
     "ICONVS|"
     "ICONV|"
     "IFS|"
+    "IF|"
     "INCLUDE|"
     "INDEX|"
     "INMAT|"
@@ -6763,12 +6770,16 @@ struct token_t tokens[] = {
     "LENS|"
     "LEN|"
     "LES|"
+    "LE|"
+    "LIKE|"
     "LN|"
     "LOCALDATE|"
     "LOCALTIME|"
     "LOCATE|"
     "LOCK|"
+    "LOOP|"
     "LOWER|"
+    "LT|"
     "MAKETIMESTAMP|"
     "MATBUILD|"
     "MATCHES|"
@@ -6787,6 +6798,8 @@ struct token_t tokens[] = {
     "MULS|"
     "NEGS|"
     "NES|"
+    "NEXT|"
+    "NE|"
     "NOBUF|"
     "NOTS|"
     "NOT|"
@@ -6796,6 +6809,7 @@ struct token_t tokens[] = {
     "OBJEXCALLBACK|"
     "OCONVS|"
     "OCONV|"
+    "ONGOTO|"
     "OPENDEV|"
     "OPENINDEX|"
     "OPENPATH|"
@@ -6845,7 +6859,9 @@ struct token_t tokens[] = {
     "REGEXP|"
     "RELEASE|"
     "REMOVE|"
+    "REPEAT|"
     "REPLACE|"
+    "RETURN|"
     "REWIND|"
     "RIGHT|"
     "RND|"
@@ -6860,6 +6876,7 @@ struct token_t tokens[] = {
     "SENTENCE|"
     "SEQS|"
     "SEQ|"
+    "SETTING|"
     "SIN|"
     "SLEEP|"
     "SMUL|"
@@ -6886,6 +6903,7 @@ struct token_t tokens[] = {
     "SUM|"
     "SWAP|"
     "TAN|"
+    "THEN|"
     "TIMEDATE|"
     "TIMEDIFF|"
     "TIMEOUT|"
@@ -6913,6 +6931,7 @@ struct token_t tokens[] = {
     "WAKE|"
     "WEOFSEQ|"
     "WEOF|"
+    "WITH|"
     "WHILE|"
     "WRITEBLK|"
     "WRITELIST|"
@@ -6926,20 +6945,52 @@ struct token_t tokens[] = {
     "XLATE|"
     "XMLTODYN|"
     "XMLTOXML|"
-    "XTD"
-    ")", clWhite | ATTR_BOLD },
+    "XTD|"
+  },
+
+  /* Numeric constant */
+  { "[^A-Za-z\\.$_0-9]((\\+|-|)[ \t]*[0-9]+(\\.[0-9]+|))",
+    1, clGreen | ATTR_BOLD, NULL },
 };
 
 static const int nb_tokens = sizeof(tokens) / sizeof(*tokens);
 
 static regexp* re_tokens[nb_tokens] = {0};
 
+#include <stdarg.h>
+
+static void t24_log(const char* fmt, ...)
+{
+  char buf[1024];
+  va_list args;  
+  va_start(args, fmt);
+  vsprintf(buf, fmt, args);
+  va_end(args);
+
+  FILE *f = fopen("t24.log", "a+");
+  if (!f) return;
+  fprintf(f, "%s\n", buf);
+  fclose(f);
+}
+
 static int t24_basic_color(int n, const char* line, termchar *newline)
 {
   int i;
-  const int group = 1;
+  const int group = tokens[n].group;
   int offset = re_tokens[n]->startp[group] - line;
-  int size = re_tokens[n]->endp[group] - re_tokens[n]->startp[group];
+  const int size = re_tokens[n]->endp[group] - re_tokens[n]->startp[group];
+  assert(size != 0);
+
+  if (tokens[n].values) {
+    char word[size + 3];
+    word[0] = '|';
+    memcpy(word + 1, re_tokens[n]->startp[group], size);
+    word[1 + size ] = '|';
+    word[1 + size + 1 ] = 0;
+    if (!strstr(tokens[n].values, word)) 
+      return size;
+  }
+
   for (i = offset; i < offset + size; ++i) {
     const int cursor_mask = TATTR_ACTCURS | TATTR_PASCURS | TATTR_RIGHTCURS;
     int cursor = newline[i].attr & cursor_mask;
@@ -6947,7 +6998,6 @@ static int t24_basic_color(int n, const char* line, termchar *newline)
     newline[i].attr |= cursor;
   }
   memset(re_tokens[n]->startp[group], 0xff, size);
-  assert(size != 0);
   return size;
 }
 
@@ -6955,7 +7005,9 @@ static void t24_basic_highlight(termchar *newline, int cols)
 {
   int i;
 
-  if (cols < 5) return;
+  const int jed_prefix_sz = 5;
+
+  if (cols < jed_prefix_sz) return;
   
   static char line[1024 * 8];
   for (i = 0; i < cols; ++i) {
@@ -6977,9 +7029,9 @@ static void t24_basic_highlight(termchar *newline, int cols)
   }
 
   for (i = 0; i < nb_tokens; ++i) {
-    int offset = 0;
+    int offset = jed_prefix_sz;
     while (regexec(re_tokens[i], line + offset)) {
-      offset += t24_basic_color(i, line, newline);
+      offset += t24_basic_color(i, line + offset, newline + offset);
     }
   }
 }
