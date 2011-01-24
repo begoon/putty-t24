@@ -6676,7 +6676,7 @@ struct token_t tokens[] = {
     "DIR|"
     "DIVS|"
     "DIV|"
-    "DOWNCASE"
+    "DOWNCASE|"
     "DO|"
     "DQUOTE"
     "DROUND|"
@@ -6710,8 +6710,8 @@ struct token_t tokens[] = {
     "FMTS|"
     "FMT|"
     "FOLD|"
-    "FOOTING|"
     "FOR|"
+    "FOOTING|"
     "FORMLIST|"
     "FSUB|"
     "FUNCTION|"
@@ -6893,10 +6893,10 @@ struct token_t tokens[] = {
     "SSELECT|"
     "SSUB|"
     "STATUS|"
+    "STEP|"
     "STOP|"
     "STRS|"
     "STR|"
-    "SUBROUTINE|"
     "SUBROUTINE|"
     "SUBSTRINGS|"
     "SUBS|"
@@ -6961,7 +6961,7 @@ static regexp* re_tokens[nb_tokens] = {0};
 
 static void t24_log(const char* fmt, ...)
 {
-  char buf[1024];
+  char buf[10240];
   va_list args;  
   va_start(args, fmt);
   vsprintf(buf, fmt, args);
