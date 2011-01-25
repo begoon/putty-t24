@@ -307,7 +307,7 @@ static void set_source_location(
 
 
 // Create function results and expected parameter lists.
-void initialize_testing(const char *test_name) {
+static void initialize_testing(const char *test_name) {
 	(void)test_name;
     list_initialize(&global_function_result_map_head);
     initialize_source_location(&global_last_mock_value_location);
@@ -338,7 +338,7 @@ void fail_if_leftover_values(const char *test_name) {
 }
 
 
-void teardown_testing(const char *test_name) {
+static void teardown_testing(const char *test_name) {
 	(void)test_name;
     list_free(&global_function_result_map_head, free_symbol_map_value,
               (void*)0);
@@ -717,7 +717,13 @@ void _expect_check(
         CheckParameterEvent * const event, const int count) {
     CheckParameterEvent * const check =
         event ? event : (CheckParameterEvent*)malloc(sizeof(*check));
-    const char* symbols[] = {function, parameter};
+
+    // LCC bug
+    // const char* symbols[] = {function, parameter};
+    char* symbols[2];
+    symbols[0] = function;
+    symbols[1] = parameter;
+
     check->parameter_name = parameter;
     check->check_value = check_function;
     check->check_value_data = check_data;
@@ -734,7 +740,7 @@ static int values_equal_display_error(const uintmax_t left,
     const int equal = left == right;
     if (!equal) {
         print_error("%" PRIxMAX " != "
-                    "%" PRIxMAX "\n", left, right);
+                    "%" PRIxMAX "\n", (int)left, (int)right);
     }
     return equal;
 }
@@ -746,7 +752,7 @@ static int values_not_equal_display_error(const uintmax_t left,
     const int not_equal = left != right;
     if (!not_equal) {
         print_error("%" PRIxMAX " == "
-                    "%" PRIxMAX "\n", left, right);
+                    "%" PRIxMAX "\n", (int)left, (int)right);
     }
     return not_equal;
 }
@@ -1186,7 +1192,13 @@ void _check_expected(
         const char * const function_name, const char * const parameter_name,
         const char* file, const int line, const uintmax_t value) {
     void *result;
-    const char* symbols[] = {function_name, parameter_name};
+
+    // LCC bug
+    // const char* symbols[] = {function, parameter};
+    char* symbols[2];
+    symbols[0] = function_name;
+    symbols[1] = parameter_name;
+
     const int rc = get_symbol_value(&global_function_parameter_map_head,
                                     symbols, 2, &result);
     if (rc) {
@@ -1407,8 +1419,12 @@ void _test_free(void* const ptr, const char* file, const int line) {
                                                sizeof(*block_info)));
     // Check the guard blocks.
     {
-        char *guards[2] = {block - MALLOC_GUARD_SIZE,
-                           block + block_info->size};
+        // LCC bug
+        // char *guards[2] = {block - MALLOC_GUARD_SIZE,
+        //                   block + block_info->size};
+        char *guards[2];
+        guards[0] = block - MALLOC_GUARD_SIZE;
+        guards[1] = block + block_info->size;
         for (i = 0; i < ARRAY_LENGTH(guards); i++) {
             unsigned int j;
             char * const guard = guards[i];

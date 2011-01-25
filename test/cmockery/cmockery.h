@@ -52,7 +52,7 @@ typedef unsigned long long uintmax_t;
 #endif /* _UINTMAX_T */
 
 /* Printf formats used to display uintmax_t. */
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__LCC__)
 
 #ifndef PRIdMAX
 #define PRIdMAX "I64d"
@@ -268,6 +268,7 @@ __FILE__, __LINE__)
     _assert_int_equal(cast_to_largest_integral_type(a), \
                       cast_to_largest_integral_type(b), \
                       __FILE__, __LINE__)
+
 // Assert that the two given integers are not equal, otherwise fail.
 #define assert_int_not_equal(a, b) \
     _assert_int_not_equal(cast_to_largest_integral_type(a), \
