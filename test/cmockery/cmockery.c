@@ -308,7 +308,6 @@ static void set_source_location(
 
 // Create function results and expected parameter lists.
 static void initialize_testing(const char *test_name) {
-	(void)test_name;
     list_initialize(&global_function_result_map_head);
     initialize_source_location(&global_last_mock_value_location);
     list_initialize(&global_function_parameter_map_head);
@@ -318,7 +317,6 @@ static void initialize_testing(const char *test_name) {
 
 void fail_if_leftover_values(const char *test_name) {
     int error_occurred = 0;
-	(void)test_name;
     remove_always_return_values(&global_function_result_map_head, 1);
     if (check_for_leftover_values(
             &global_function_result_map_head,
@@ -339,7 +337,6 @@ void fail_if_leftover_values(const char *test_name) {
 
 
 static void teardown_testing(const char *test_name) {
-	(void)test_name;
     list_free(&global_function_result_map_head, free_symbol_map_value,
               (void*)0);
     initialize_source_location(&global_last_mock_value_location);
@@ -461,7 +458,6 @@ static int list_first(ListNode * const head, ListNode **output) {
 
 // Deallocate a value referenced by a list.
 static void free_value(const void *value, void *cleanup_value_data) {
-	(void)cleanup_value_data;
     assert_non_null(value);
     free((void*)value);
 }
@@ -1173,8 +1169,6 @@ void _expect_not_memory(
 // CheckParameterValue callback that always returns 1.
 static int check_any(const uintmax_t value,
                      const uintmax_t check_value_data) {
-	(void)value;
-	(void)check_value_data;
     return 1;
 }
 
@@ -1356,7 +1350,7 @@ void _assert_not_in_set(const uintmax_t value,
 
 
 // Get the list of allocated blocks.
-static ListNode* get_allocated_blocks_list() {
+static ListNode* get_allocated_blocks_list(void) {
     // If it initialized, initialize the list of allocated blocks.
     if (!global_allocated_blocks.value) {
         list_initialize(&global_allocated_blocks);
@@ -1453,7 +1447,7 @@ void _test_free(void* const ptr, const char* file, const int line) {
 
 
 // Crudely checkpoint the current heap state.
-static const ListNode* check_point_allocated_blocks() {
+static const ListNode* check_point_allocated_blocks(void) {
     return get_allocated_blocks_list()->prev;
 }
 
