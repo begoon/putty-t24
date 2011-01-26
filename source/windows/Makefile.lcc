@@ -203,7 +203,7 @@ putty.exe: be_all_s.obj cmdline.obj config.obj cproxy.obj dialog.obj \
 		winctrls.obj windefs.obj windlg.obj window.obj winhandl.obj \
 		winhelp.obj winmisc.obj winnet.obj winnoise.obj winpgntc.obj \
 		winprint.obj winproxy.obj winser.obj winstore.obj \
-		wintime.obj winucs.obj winutils.obj x11fwd.obj
+		wintime.obj winucs.obj winutils.obj x11fwd.obj t24.obj
 	lcclnk -subsystem  windows -o putty.exe be_all_s.obj cmdline.obj config.obj \
 		cproxy.obj dialog.obj ldisc.obj ldiscucs.obj logging.obj \
 		minibidi.obj misc.obj pinger.obj portfwd.obj proxy.obj \
@@ -217,8 +217,8 @@ putty.exe: be_all_s.obj cmdline.obj config.obj cproxy.obj dialog.obj \
 		window.obj winhandl.obj winhelp.obj winmisc.obj winnet.obj \
 		winnoise.obj winpgntc.obj winprint.obj winproxy.obj \
 		winser.obj winstore.obj wintime.obj winucs.obj winutils.obj \
-		x11fwd.obj shell32.lib wsock32.lib ws2_32.lib winspool.lib \
-		winmm.lib imm32.lib
+		x11fwd.obj t24.obj shell32.lib wsock32.lib ws2_32.lib \
+		winspool.lib winmm.lib imm32.lib
 
 puttygen.exe: import.obj misc.obj notiming.obj puttygen.res sshaes.obj \
 		sshbn.obj sshdes.obj sshdss.obj sshdssg.obj sshmd5.obj \
@@ -926,6 +926,11 @@ x11fwd.obj: ..\x11fwd.c ..\putty.h ..\ssh.h ..\tree234.h ..\puttyps.h \
 		..\windows\winstuff.h ..\mac\macstuff.h ..\macosx\osx.h \
 		..\unix\unix.h ..\windows\winhelp.h ..\charset\charset.h
 	lcc $(OPT) -p6 $(COMPAT) $(CFLAGS) $(XFLAGS) ..\x11fwd.c
+t24.obj: ..\t24.c ..\putty.h ..\terminal.h ..\puttyps.h \
+		..\network.h ..\misc.h ..\tree234.h ..\windows\winstuff.h \
+		..\mac\macstuff.h ..\macosx\osx.h ..\unix\unix.h \
+		..\puttymem.h ..\windows\winhelp.h ..\charset\charset.h
+	lcc $(OPT) -p6 $(COMPAT) $(CFLAGS) $(XFLAGS) ..\t24.c
 xenc.obj: ..\charset\xenc.c ..\charset\charset.h ..\charset\internal.h
 	lcc $(OPT) -p6 $(COMPAT) $(CFLAGS) $(XFLAGS) ..\charset\xenc.c
 xkeysym.obj: ..\unix\xkeysym.c ..\misc.h ..\puttymem.h
