@@ -4182,7 +4182,7 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
  * C.T = CHARX(20) ;* F7
  */
 	if (cfg.funky_type == FUNKY_T24 &&     /* T24 function keys */
-	    code >= 11 && code <= 20) {        /* F1-F9 */
+	    code >= 11 && code <= 21) {        /* F1-F10 */
 	    int enter = 1;
 	    switch (wParam) {
 		case VK_F1: *p++ = '\x15'; break;
@@ -4196,7 +4196,8 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
 		    modal_input_t24_search_word(hwnd);
 		    enter = 0;
 		    break;
-		case VK_F9: {
+		case VK_F9:
+		case VK_F10: {
 		    unsigned char t24_line[term->cols];
 		    size_t word_sz = strlen(t24_search_word);
 		    size_t i;
@@ -4219,7 +4220,8 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
 			term->selstate = SELECTED;
 			term_update(term);
 		    } else {
-			p += sprintf((char *) p, " \x06\n");
+			const char c = wParam == VK_F9 ? 6 : 2;
+			p += sprintf((char *) p, " %c\n", c);
 			return p - output;
 		    }	
 		}
