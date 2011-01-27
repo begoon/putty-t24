@@ -500,6 +500,8 @@ void t24_basic_highlight(termchar *newline, int cols)
 
   for (i = 0; i < nb_tokens; ++i) {
     int offset = jed_prefix_sz;
+  printf("%s\n", line);
+
     while (regexec(re_tokens[i], line + offset)) {
       offset += t24_basic_color(i, line + offset, newline + offset);
     }

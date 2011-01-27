@@ -1,7 +1,10 @@
 set PATH=c:\lcc\bin;%PATH%
 del *.obj
-lcc -p6 -Itest\cmockery test\cmockery\cmockery.c && ^
-lcc -p6 -Itest\cmockery test\unittest_runner.c && ^
-lcclnk -o unittest_runner.exe unittest_runner.obj cmockery.obj && ^
+set INCLUDE=-Isource -Isource\windows -Itest\cmockery
+lcc -p6 -D_WINDOWS %INCLUDE% test\cmockery\cmockery.c && ^
+lcc -p6 -D_WINDOWS %INCLUDE% test\unittest_runner.c && ^
+lcc -p6 -D_WINDOWS %INCLUDE% source\misc.c && ^
+lcc -p6 -D_WINDOWS %INCLUDE% source\t24.c && ^
+lcclnk -o unittest_runner.exe unittest_runner.obj cmockery.obj misc.obj t24.obj && ^
 unittest_runner.exe
 
