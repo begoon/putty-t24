@@ -38,12 +38,21 @@ void freeline(termline *line) {
 }
 
 const char* decode_colors(const termchar* chars, int cols) {
-  static const char codes[] = "01234567";
+  int current_color = -1;
+  int letter = 'a' - 1;
   static char buf[1024];
   int i;
   for (i = 0; i < cols; ++i) {
     int color = chars[i].attr;
-    buf[i] = color == '.' ? color : codes[color & 0x07];
+    if (color == '.') {
+      buf[i] = color;
+    } else {
+      if (current_color != color) {
+        current_color = color;
+        letter += 1;
+      }
+      buf[i] = letter;
+    }
   }
   buf[cols] = 0;
   return buf;
@@ -61,14 +70,14 @@ const char* syntax(const char *chars) {
 #define string_eq(a, b) assert_string_equal(syntax(a), b)
 
 void test_Comments(void **state) {
-  string_eq("1234 !--------", ".....333333333");
-  string_eq("1234   !--------", ".......333333333");
-  string_eq("1234 *--------", ".....333333333");
-  string_eq("1234   *--------", ".......333333333");
-  string_eq("1234 VAR ;* comments", ".........33333333333");
-  string_eq("1234 VAR // comments", ".........33333333333");
+  string_eq("1234 !--------", ".....aaaaaaaaa");
+  string_eq("1234   !--------", ".......aaaaaaaaa");
+  string_eq("1234 *--------", ".....aaaaaaaaa");
+  string_eq("1234   *--------", ".......aaaaaaaaa");
+  string_eq("1234 VAR ;* comments", ".........aaaaaaaaaaa");
+  string_eq("1234 VAR // comments", ".........aaaaaaaaaaa");
   string_eq("1234 A = '// string'  // slash/shash comment", 
-            ".........33333333333..3333333333333333333333");
+            ".........aaaaaaaaaaa..bbbbbbbbbbbbbbbbbbbbbb");
 }
 
 int main(int argc, char* argv[]) {
