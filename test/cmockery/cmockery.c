@@ -827,7 +827,7 @@ static int string_equal_display_error(
     if (strcmp(left, right) == 0) {
         return 1;
     }
-    print_error("\"%s\" != \"%s\"\n", left, right);
+    print_error("\"%s\"\n!=\n\"%s\"\n", left, right);
     return 0;
 }
 
@@ -840,7 +840,7 @@ static int string_not_equal_display_error(
     if (strcmp(left, right) != 0) {
         return 1;
     }
-    print_error("\"%s\" == \"%s\"\n", left, right);
+    print_error("\"%s\"\n==\n\"%s\"\n", left, right);
     return 0;
 }
 

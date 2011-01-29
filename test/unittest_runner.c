@@ -10,6 +10,7 @@ void test_Bootstrap(void **state) {
   assert_int_equal(0LL, 0LL);
 }
 
+
 void modalfatalbox(char *fmt, ...) {}
 
 void t24_basic_highlight(termchar *newline, int cols);
@@ -44,6 +45,7 @@ const char* decode_colors(const termchar* chars, int cols) {
     int color = chars[i].attr;
     buf[i] = color == '.' ? color : codes[color & 0x07];
   }
+  buf[cols] = 0;
   return buf;
 }
 
@@ -56,8 +58,17 @@ const char* syntax(const char *chars) {
   return result;
 }
 
+#define string_eq(a, b) assert_string_equal(syntax(a), b)
+
 void test_Comments(void **state) {
-  assert_string_equal(syntax("1234 !--------\n"), ".....3333333334");
+  string_eq("1234 !--------", ".....333333333");
+  string_eq("1234   !--------", ".......333333333");
+  string_eq("1234 *--------", ".....333333333");
+  string_eq("1234   *--------", ".......333333333");
+  string_eq("1234 VAR ;* comments", ".........33333333333");
+  string_eq("1234 VAR // comments", ".........33333333333");
+  string_eq("1234 A = '// string'  // slash/shash comment", 
+            ".........33333333333..3333333333333333333333");
 }
 
 int main(int argc, char* argv[]) {
