@@ -202,6 +202,7 @@ char t24_search_word[1024] = {0};
 int t24_highligh_on = 1;
 static void t24_get_line(int line_no, unsigned char *t24_line);
 extern int t24_menu_mode;
+extern int t24_jed_mode;
 
 /* Dummy routine, only required in plink. */
 void ldisc_update(void *frontend, int echo, int edit)
@@ -3035,11 +3036,27 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 		shift_pressed=LOWORD(wParam) & MK_SHIFT;
 		control_pressed=LOWORD(wParam) & MK_CONTROL;
 
-		if (cfg.funky_type == FUNKY_T24 && control_pressed == 8 && wheel_accumulator < 0 )
-		   ldisc_send(ldisc, "\x06\n", 2, 1);
-
-		if (cfg.funky_type == FUNKY_T24 && control_pressed == 8 && wheel_accumulator > 0 )
-		   ldisc_send(ldisc, "\x02\n", 2, 1);
+		if (cfg.funky_type == FUNKY_T24 && control_pressed == 8 && wheel_accumulator != 0 ) {
+		    if (t24_menu_mode) {
+			if (wheel_accumulator < 0)
+			   ldisc_send(ldisc, "\x06\n", 2, 1);
+			else if (wheel_accumulator > 0)
+			   ldisc_send(ldisc, "\x02\n", 2, 1);
+		    } else if (t24_jed_mode) {
+			const char xkey = wheel_accumulator > 0 ? 'A' : 'B';
+			char* fmt = 0;
+			if (term->vt52_mode) {
+			    fmt = "\x1B%c";
+			} else {
+			    int app_flg = (term->app_cursor_keys && !cfg.no_applic_c);
+			    fmt = app_flg ? "\x1BO%c" : "\x1B[%c";
+			}
+			assert(fmt != 0);
+			char keys[1024];
+			sprintf(keys, fmt, xkey);
+			ldisc_send(ldisc, keys, strlen(keys), 1);
+		   }
+		}
 	    } else {
 		BYTE keys[256];
 		wheel_accumulator += (int)wParam;
@@ -4184,8 +4201,14 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
  * C.T = CHARX(20) ;* F7
  */
 	if (cfg.funky_type == FUNKY_T24 &&     /* T24 function keys */
-	    code >= 11 && code <= 24 &&        /* F1-F12 */
-	    t24_menu_mode) {                   /* 4th line is "----- ... -". */
+	    code >= 11 && code <= 24) {        /* F1-F12 */
+	    if (wParam == VK_F12) {
+		t24_highligh_on = !t24_highligh_on;
+		term_invalidate(term);
+		return p - output;
+	    }
+	    if (!t24_menu_mode)                /* 4th line is "----- ... -". */
+		return p - output;
 	    int enter = 1;
 	    switch (wParam) {
 		case VK_F1: *p++ = '\x15'; break;
@@ -4253,10 +4276,6 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
 			return p - output;
 		    }	
 		}
-		case VK_F12:
-		    t24_highligh_on = !t24_highligh_on;
-		    term_invalidate(term);
-		    break;
 	    }
 	    if (enter) *p++ = '\n';
 	    return p - output;

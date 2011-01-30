@@ -4908,6 +4908,12 @@ static void do_paint(Terminal *term, Context ctx, int may_optimise)
 		}
 		t24_menu_mode = count > 20;
 	    }
+	    if (i == term->curs.y && term->cols >= 4) {
+		t24_jed_mode = isdigit(newline[0].chr & 0xff) &&
+		               isdigit(newline[1].chr & 0xff) &&
+		               isdigit(newline[2].chr & 0xff) &&
+		               isdigit(newline[3].chr & 0xff);
+	    }
 	}
 
 	for (j = 0; j < term->cols; j++) {

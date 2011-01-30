@@ -4,6 +4,7 @@
 #include <regexp.h>
 
 int t24_menu_mode = 0;
+int t24_jed_mode = 0;
 
 enum AnsiColor {
   clBlack  = 0,
@@ -466,7 +467,7 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
     char word[size + 1];
     memcpy(word, re_tokens[n]->startp[group], size);
     word[size] = 0;
-	printf("token: [%s]\n", word);
+    printf("token: [%s]\n", word);
   }
 #endif
   
@@ -524,12 +525,12 @@ void t24_basic_highlight(termchar *newline, int cols)
   while (*p) {
     int found = 0;
     for (i = 0; !found && i < nb_tokens; ++i) {
-	  if (regexec(re_tokens[i], p)) {
-	    p = t24_basic_color(i, p, newline + (p - line), index);
+      if (regexec(re_tokens[i], p)) {
+        p = t24_basic_color(i, p, newline + (p - line), index);
         index += 1;
-		found = 1;
-	  }
-	}
-	if (!found) p += 1;
+        found = 1;
+      }
+    }
+    if (!found) p += 1;
   }
 }

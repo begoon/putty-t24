@@ -7,6 +7,7 @@
 void t24_basic_highlight(termchar *newline, int cols);
 extern int t24_highligh_on;
 extern int t24_menu_mode;
+extern int t24_jed_mode;
 
 #endif
 
