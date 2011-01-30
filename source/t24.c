@@ -397,7 +397,7 @@ struct token_t tokens[] = {
     "UNASSIGNED|"
     "UNIQUEKEY|"
     "UNLOCK|"
-	"UNTIL|"
+    "UNTIL|"
     "UPCASE|"
     "UPCASE|"
     "UTF8|"
