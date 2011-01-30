@@ -199,6 +199,7 @@ static int compose_state = 0;
 static UINT wm_mousewheel = WM_MOUSEWHEEL;
 
 char t24_search_word[1024] = {0};
+int t24_highligh_on = 1;
 static void t24_get_line(int line_no, unsigned char *t24_line);
 
 /* Dummy routine, only required in plink. */
@@ -4182,7 +4183,7 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
  * C.T = CHARX(20) ;* F7
  */
 	if (cfg.funky_type == FUNKY_T24 &&     /* T24 function keys */
-	    code >= 11 && code <= 21) {        /* F1-F10 */
+	    code >= 11 && code <= 24) {        /* F1-F12 */
 	    int enter = 1;
 	    switch (wParam) {
 		case VK_F1: *p++ = '\x15'; break;
@@ -4225,6 +4226,10 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
 			return p - output;
 		    }	
 		}
+		case VK_F12:
+		    t24_highligh_on = !t24_highligh_on;
+		    term_invalidate(term);
+		    break;
 	    }
 	    if (enter) *p++ = '\n';
 	    return p - output;

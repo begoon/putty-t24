@@ -4896,7 +4896,7 @@ static void do_paint(Terminal *term, Context ctx, int may_optimise)
 				  term->disptext[i]->lattr);
 	term->disptext[i]->lattr = ldata->lattr;
 
-	if (term->cfg.funky_type == FUNKY_T24)
+	if (term->cfg.funky_type == FUNKY_T24 && t24_highligh_on)
 	  t24_basic_highlight(newline, term->cols);
 
 	for (j = 0; j < term->cols; j++) {

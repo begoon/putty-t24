@@ -5,6 +5,7 @@
 #include "terminal.h"
 
 void t24_basic_highlight(termchar *newline, int cols);
+extern int t24_highligh_on;
 
 #endif
 
