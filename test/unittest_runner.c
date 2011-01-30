@@ -80,10 +80,24 @@ void test_Comments(void **state) {
             ".........aaaaaaaaaaa..bbbbbbbbbbbbbbbbbbbbbb");
 }
 
+void test_Ticket_dd6a19efa5265e7_Date(void **state) {
+  string_eq("0029  ENTRIES<1, AC.STE.VALUE.DATE>    = TODAY", 
+            "..............a...............................");
+  string_eq("0036  ENTRIES<1, AC.STE.BOOKING.DATE>  = TODAY", 
+            "..............a...............................");
+  string_eq("0036  ENTRIES<1, AC.STE.BOOKING DATE>  = TODAY", 
+            "..............a.................bbbb..........");
+  string_eq("0036 DATE = TODAY", 
+            ".....aaaa........");
+  string_eq("0036  DATE = TODAY", 
+            "......aaaa........");
+}
+
 int main(int argc, char* argv[]) {
   UnitTest tests[] = {
     unit_test(test_Bootstrap),
     unit_test(test_Comments),
+    unit_test(test_Ticket_dd6a19efa5265e7_Date),
   };
   return run_tests(tests);
 }

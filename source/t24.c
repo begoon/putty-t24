@@ -41,21 +41,21 @@ struct token_t tokens[] = {
   { "^([a-zA-Z_\\.]+\\:)", 1, clBlue | ATTR_BOLD, NULL },
 
   /* System variable */
-  { "(@\\([a-zA-Z0-9_\\.$]+\\))", 1, clCyan, NULL },
+  { "(@\\([a-zA-Z0-9_\\.\\$]+\\))", 1, clCyan, NULL },
 
   /* Cursor positioning */
-  { "((@)\\([ \t]*[a-zA-Z0-9_\\.$]+[ \t]*,[ \t]*[a-zA-Z0-9_\\.$]+[ \t]*\\))", 
+  { "((@)\\([ \t]*[a-zA-Z0-9_\\.\\$]+[ \t]*,[ \t]*[a-zA-Z0-9_\\.\\$]+[ \t]*\\))", 
     2, clCyan, NULL },
 
   /* System variable @NAME */
   { "(@[a-zA-Z_\\.]+)", 1, clCyan, NULL },
 
   /* Common */
-  { "COMMON[ \t]+/[ \t]*([a-zA-Z_$][a-zA-Z0-9_\\.$]*)[ \t]*/", 
+  { "COMMON[ \t]+/[ \t]*([a-zA-Z_\\$][a-zA-Z0-9_\\.$]*)[ \t]*/", 
     1, clRed | ATTR_BOLD, NULL },
 
   /* Operators and functions */
-  { "(^|[^a-zA-Z0-9_\\.$])([a-zA-Z_$][a-zA-Z0-9_\\.$]*)", 2, clRed | ATTR_BOLD, 
+  { "([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, clRed | ATTR_BOLD, 
     "|"
     "ABORT|"
     "ABSS|"
@@ -419,7 +419,7 @@ struct token_t tokens[] = {
   },
 
   /* Numeric constant */
-  { "[^A-Za-z\\.$_0-9]((\\+|-|)[ \t]*[0-9]+(\\.[0-9]+|))",
+  { "((\\+|-|)[ \t]*[0-9]+(\\.[0-9]+|))",
     1, clGreen | ATTR_BOLD, NULL },
 };
 
@@ -475,9 +475,9 @@ void t24_basic_highlight(termchar *newline, int cols)
 {
   int i;
 
-  const int jed_prefix_sz = 5;
+  const int jed_prefix_length = 5;
 
-  if (cols < jed_prefix_sz) return;
+  if (cols < jed_prefix_length) return;
   
   static char line[1024 * 8];
   for (i = 0; i < cols; ++i) {
@@ -498,11 +498,14 @@ void t24_basic_highlight(termchar *newline, int cols)
       assert(re_tokens[i] = regcomp(tokens[i].re));
   }
 
-  for (i = 0; i < nb_tokens; ++i) {
-    int offset = jed_prefix_sz;
-
-    while (regexec(re_tokens[i], line + offset)) {
-      offset += t24_basic_color(i, line + offset, newline + offset);
-    }
+  int offset = jed_prefix_length;
+  while (offset < cols) {
+    int found = 0;
+    for (i = 0; !found && i < nb_tokens; ++i) {
+	  if (regexec(re_tokens[i], line + offset))
+	    offset += t24_basic_color(i, line + offset, newline + offset);
+	}
+	if (!found)
+	  offset += 1;
   }
 }
