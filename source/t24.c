@@ -184,6 +184,7 @@ struct token_t tokens[] = {
     "FOR|"
     "FOOTING|"
     "FORMLIST|"
+    "FROM|"
     "FSUB|"
     "FUNCTION|"
     "GES|"
@@ -420,7 +421,7 @@ struct token_t tokens[] = {
   },
 
   /* Numeric constant */
-  { "^((\\+|-|)[ \t]*[0-9]+(\\.[0-9]+|))",
+  { "^((\\+|-|)[0-9]+(\\.[0-9]+|))",
     1, -1, clGreen | ATTR_BOLD, NULL },
 	
   /* Skip current token */
@@ -456,6 +457,15 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
   assert(size != 0);
 
   const char* next = re_tokens[n]->endp[group];
+
+#if 0
+  {
+    char word[size + 1];
+    memcpy(word, re_tokens[n]->startp[group], size);
+    word[size] = 0;
+	printf("token: [%s]\n", word);
+  }
+#endif
   
   if (tokens[n].index != -1 && index != tokens[n].index) return next;
 

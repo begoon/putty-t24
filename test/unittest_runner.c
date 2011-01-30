@@ -46,6 +46,7 @@ const char* decode_colors(const termchar* chars, int cols) {
     int color = chars[i].attr;
     if (color == '.') {
       buf[i] = color;
+	  current_color = -1;
     } else {
       if (current_color != color) {
         current_color = color;
@@ -80,7 +81,7 @@ void test_Comments(void **state) {
             ".........aaaaaaaaaaa..bbbbbbbbbbbbbbbbbbbbbb");
 }
 
-void test_Ticket_dd6a19efa5_Date(void **state) {
+void test_Ticket_dd6a19efa5_DATE(void **state) {
   string_eq("0029  ENTRIES<1, AC.STE.VALUE.DATE>    = TODAY", 
             "..............a...............................");
   string_eq("0036  ENTRIES<1, AC.STE.BOOKING.DATE>  = TODAY", 
@@ -93,11 +94,16 @@ void test_Ticket_dd6a19efa5_Date(void **state) {
             "......aaaa........");
 }
 
-void test_Ticket_e8e02762a0_V_Time(void **state) {
+void test_Ticket_e8e02762a0_V_TIME(void **state) {
   string_eq("0017     V.TIME = ''", 
             "..................aa");
   string_eq("0034     V.DELTA = TIME() - TIME1", 
             "...................aaaa..........");
+}
+
+void test_Ticket_0bcfac1fb6_READNEXT_FROM(void **state) {
+  string_eq("0167     READNEXT ID FROM 9 ELSE DONE = 1 ", 
+            ".........aaaaaaaa....bbbb.c.dddd........e.");
 }
 
 void test_Label(void **state) {
@@ -121,9 +127,10 @@ int main(int argc, char* argv[]) {
   UnitTest tests[] = {
     unit_test(test_Bootstrap),
     unit_test(test_Comments),
-    unit_test(test_Ticket_dd6a19efa5_Date),
-	unit_test(test_Ticket_e8e02762a0_V_Time),
 	unit_test(test_Label),
+    unit_test(test_Ticket_dd6a19efa5_DATE),
+	unit_test(test_Ticket_e8e02762a0_V_TIME),
+	unit_test(test_Ticket_0bcfac1fb6_READNEXT_FROM),
   };
   return run_tests(tests);
 }
