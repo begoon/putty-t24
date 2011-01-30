@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <regexp.h>
 
+int t24_menu_mode = 0;
+
 enum AnsiColor {
   clBlack  = 0,
   clRed    = 1,
@@ -435,7 +437,7 @@ static regexp* re_tokens[nb_tokens] = {0};
 
 #include <stdarg.h>
 
-static void t24_log(const char* fmt, ...)
+void t24_log(const char* fmt, ...)
 {
   char buf[10240];
   va_list args;  
