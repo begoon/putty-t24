@@ -106,6 +106,15 @@ void test_Ticket_0bcfac1fb6_READNEXT_FROM(void **state) {
             ".........aaaaaaaa....bbbb.c.dddd........e.");
 }
 
+void test_Ticket_3f3645bab6_UNTIL_DO_REPEAT(void **state) {
+  string_eq("0204     UNTIL DONE DO ", 
+            ".........aaaaa......bb.");
+  string_eq("0230     REPEAT", 
+            ".........aaaaaa");
+  string_eq("0231     REPEAT ", 
+            ".........aaaaaa.");
+}
+
 void test_Label(void **state) {
   string_eq("0017  LABEL:", 
             "......aaaaaa");
@@ -131,6 +140,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_dd6a19efa5_DATE),
 	unit_test(test_Ticket_e8e02762a0_V_TIME),
 	unit_test(test_Ticket_0bcfac1fb6_READNEXT_FROM),
+	unit_test(test_Ticket_3f3645bab6_UNTIL_DO_REPEAT),
   };
   return run_tests(tests);
 }
