@@ -4199,26 +4199,51 @@ static int TranslateKey(UINT message, WPARAM wParam, LPARAM lParam,
 		    break;
 		case VK_F9:
 		case VK_F10: {
+		    static struct {
+			int start_x, end_x, y;
+		    } selections[2048];
+		    enum {
+			max_selections = sizeof(selections) / sizeof(*selections)
+		    };
+		    static int nb_selections = 0;
+		    
+		    /* De-select previously selected regions. */
+		    size_t i;
+		    for (i = 0; i < nb_selections; ++i) {
+			termline *termline = index234(term->screen, selections[i].y);
+			int x;
+			for (x = selections[i].start_x; x < selections[i].end_x; ++x)
+			    termline->chars[x].attr &= ~ATTR_REVERSE;
+		    }
+		    if (nb_selections)
+			term_update(term);
+		    nb_selections = 0;
+		    
 		    unsigned char t24_line[term->cols];
 		    size_t word_sz = strlen(t24_search_word);
-		    size_t i;
 		    if (word_sz == 0) return p - output;
 
-	            char* found = 0; 
+		    int highlighted = 0;
 		    for (i = 4; i <= 19; i++) {
 			t24_get_line(i, t24_line);
-			found = strstr(t24_line, t24_search_word);
-			if (found != NULL) break;
+			char* found = strstr(t24_line, t24_search_word);
+			while (found && nb_selections < max_selections) {
+			    highlighted = 1;
+			    termline *termline = index234(term->screen, i);
+			    size_t start_x = found - t24_line;
+			    size_t end_x = start_x + word_sz;
+			    int x;
+			    for (x = start_x; x < end_x; ++x)
+				termline->chars[x].attr |= ATTR_REVERSE;
+			    selections[nb_selections].start_x = start_x;
+			    selections[nb_selections].end_x = end_x;
+			    selections[nb_selections].y = i;
+			    nb_selections += 1;
+			    found = strstr(t24_line + end_x, t24_search_word);
+			}
 		    }
 
-		    if (found) {
-			term_deselect(term);
-			term->selstart.y = i;
-	  		term->selend.y = i;
-			size_t offset = found - t24_line;
-	  		term->selstart.x = offset;
-			term->selend.x = offset + word_sz;
-			term->selstate = SELECTED;
+		    if (highlighted) {
 			term_update(term);
 		    } else {
 			const char c = wParam == VK_F9 ? 6 : 2;
