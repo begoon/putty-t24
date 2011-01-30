@@ -141,12 +141,12 @@ int main(int argc, char* argv[]) {
   UnitTest tests[] = {
     unit_test(test_Bootstrap),
     unit_test(test_Comments),
-	unit_test(test_Label),
-	unit_test(test_Ticket_dd6a19efa5_DATE),
-	unit_test(test_Ticket_e8e02762a0_V_TIME),
-	unit_test(test_Ticket_0bcfac1fb6_READNEXT_FROM),
-	unit_test(test_Ticket_3f3645bab6_UNTIL_DO_REPEAT),
-	unit_test(test_Ticket_cce4f3f8dc1b52fc_F_IN_FILE),
+    unit_test(test_Label),
+    unit_test(test_Ticket_dd6a19efa5_DATE),
+    unit_test(test_Ticket_e8e02762a0_V_TIME),
+    unit_test(test_Ticket_0bcfac1fb6_READNEXT_FROM),
+    unit_test(test_Ticket_3f3645bab6_UNTIL_DO_REPEAT),
+    unit_test(test_Ticket_cce4f3f8dc1b52fc_F_IN_FILE),
   };
   return run_tests(tests);
 }
