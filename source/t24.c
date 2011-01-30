@@ -17,45 +17,46 @@ enum AnsiColor {
 struct token_t {
   char* re;              /* regexp */
   int group;
+  int index;             
   unsigned long color;   /* color and attributes */
   char* values;          /* a list pre-defined values or NULL */
 };
 
 struct token_t tokens[] = {
   /* Entire line comment */
-  { "^[ \t]*((\\*|!|//).*)", 1, clYellow, NULL },
+  { "^[ \t]*((\\*|!|//).*)", 1, -1, clYellow, NULL },
 
   /* Double quoted string */
-  { "(\"[^\"]*\")", 1, clYellow | ATTR_BOLD, NULL },
+  { "^(\"[^\"]*\")", 1, -1, clYellow | ATTR_BOLD, NULL },
 
   /* Single quoted string */
-  { "('[^']*')", 1, clYellow | ATTR_BOLD, NULL },
+  { "^('[^']*')", 1, -1, clYellow | ATTR_BOLD, NULL },
 
   /* Slash quoted string */
-  { "(\\\\[^\\\\\]*\\\\)", 1, clYellow | ATTR_BOLD, NULL },
+  { "^(\\\\[^\\\\\]*\\\\)", 1, -1, clYellow | ATTR_BOLD, NULL },
 
   /* Ending comment */
-  { "((;\\*|//).*)$", 1, clYellow, NULL },
+  { "^((;\\*|//).*)$", 1, -1, clYellow, NULL },
 
   /* Label */
-  { "^([a-zA-Z_\\.]+\\:)", 1, clBlue | ATTR_BOLD, NULL },
+  { "^([a-zA-Z0-9_\\.]+\\:)", 1, 0, clBlue | ATTR_BOLD, NULL },
 
   /* System variable */
-  { "(@\\([a-zA-Z0-9_\\.\\$]+\\))", 1, clCyan, NULL },
+  { "^(@\\([a-zA-Z0-9_\\.\\$]+\\))", 1, -1, clCyan, NULL },
 
   /* Cursor positioning */
-  { "((@)\\([ \t]*[a-zA-Z0-9_\\.\\$]+[ \t]*,[ \t]*[a-zA-Z0-9_\\.\\$]+[ \t]*\\))", 
-    2, clCyan, NULL },
+  { "^((@)\\([ \t]*[a-zA-Z0-9_\\.\\$]+[ \t]*,[ \t]*[a-zA-Z0-9_\\.\\$]+[ \t]*\\))", 
+    2, -1, clCyan, NULL },
 
   /* System variable @NAME */
-  { "(@[a-zA-Z_\\.]+)", 1, clCyan, NULL },
+  { "^(@[a-zA-Z_\\.]+)", 1, -1, clCyan, NULL },
 
   /* Common */
-  { "COMMON[ \t]+/[ \t]*([a-zA-Z_\\$][a-zA-Z0-9_\\.$]*)[ \t]*/", 
-    1, clRed | ATTR_BOLD, NULL },
+  { "^COMMON[ \t]+/[ \t]*([a-zA-Z_\\$][a-zA-Z0-9_\\.$]*)[ \t]*/", 
+    1, -1, clRed | ATTR_BOLD, NULL },
 
   /* Operators and functions */
-  { "([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, clRed | ATTR_BOLD, 
+  { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, clRed | ATTR_BOLD, 
     "|"
     "ABORT|"
     "ABSS|"
@@ -419,8 +420,11 @@ struct token_t tokens[] = {
   },
 
   /* Numeric constant */
-  { "((\\+|-|)[ \t]*[0-9]+(\\.[0-9]+|))",
-    1, clGreen | ATTR_BOLD, NULL },
+  { "^((\\+|-|)[ \t]*[0-9]+(\\.[0-9]+|))",
+    1, -1, clGreen | ATTR_BOLD, NULL },
+	
+  /* Skip current token */
+  { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, -1, NULL }
 };
 
 static const int nb_tokens = sizeof(tokens) / sizeof(*tokens);
@@ -443,13 +447,17 @@ static void t24_log(const char* fmt, ...)
   fclose(f);
 }
 
-static int t24_basic_color(int n, const char* line, termchar *newline)
+static char* t24_basic_color(int n, const char* line, termchar *newline, int index)
 {
   int i;
   const int group = tokens[n].group;
   int offset = re_tokens[n]->startp[group] - line;
   const int size = re_tokens[n]->endp[group] - re_tokens[n]->startp[group];
   assert(size != 0);
+
+  const char* next = re_tokens[n]->endp[group];
+  
+  if (tokens[n].index != -1 && index != tokens[n].index) return next;
 
   if (tokens[n].values) {
     char word[size + 3];
@@ -458,7 +466,7 @@ static int t24_basic_color(int n, const char* line, termchar *newline)
     word[1 + size ] = '|';
     word[1 + size + 1 ] = 0;
     if (!strstr(tokens[n].values, word)) 
-      return size;
+      return next;
   }
 
   for (i = offset; i < offset + size; ++i) {
@@ -468,7 +476,7 @@ static int t24_basic_color(int n, const char* line, termchar *newline)
     newline[i].attr |= cursor;
   }
   memset(re_tokens[n]->startp[group], 0xff, size);
-  return size;
+  return next;
 }
 
 void t24_basic_highlight(termchar *newline, int cols) 
@@ -498,14 +506,17 @@ void t24_basic_highlight(termchar *newline, int cols)
       assert(re_tokens[i] = regcomp(tokens[i].re));
   }
 
-  int offset = jed_prefix_length;
-  while (offset < cols) {
+  char* p = line + jed_prefix_length;
+  int index = 0;
+  while (*p) {
     int found = 0;
     for (i = 0; !found && i < nb_tokens; ++i) {
-	  if (regexec(re_tokens[i], line + offset))
-	    offset += t24_basic_color(i, line + offset, newline + offset);
+	  if (regexec(re_tokens[i], p)) {
+	    p = t24_basic_color(i, p, newline + (p - line), index);
+        index += 1;
+		found = 1;
+	  }
 	}
-	if (!found)
-	  offset += 1;
+	if (!found) p += 1;
   }
 }

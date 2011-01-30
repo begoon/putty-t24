@@ -80,12 +80,12 @@ void test_Comments(void **state) {
             ".........aaaaaaaaaaa..bbbbbbbbbbbbbbbbbbbbbb");
 }
 
-void test_Ticket_dd6a19efa5265e7_Date(void **state) {
+void test_Ticket_dd6a19efa5_Date(void **state) {
   string_eq("0029  ENTRIES<1, AC.STE.VALUE.DATE>    = TODAY", 
             "..............a...............................");
   string_eq("0036  ENTRIES<1, AC.STE.BOOKING.DATE>  = TODAY", 
             "..............a...............................");
-  string_eq("0036  ENTRIES<1, AC.STE.BOOKING DATE>  = TODAY", 
+  string_eq("0036  ENTRIES<1, AC.STE.TOOKING DATE>  = TODAY", 
             "..............a.................bbbb..........");
   string_eq("0036 DATE = TODAY", 
             ".....aaaa........");
@@ -93,11 +93,37 @@ void test_Ticket_dd6a19efa5265e7_Date(void **state) {
             "......aaaa........");
 }
 
+void test_Ticket_e8e02762a0_V_Time(void **state) {
+  string_eq("0017     V.TIME = ''", 
+            "..................aa");
+  string_eq("0034     V.DELTA = TIME() - TIME1", 
+            "...................aaaa..........");
+}
+
+void test_Label(void **state) {
+  string_eq("0017  LABEL:", 
+            "......aaaaaa");
+  string_eq("0018 LABEL: ", 
+            ".....aaaaaa.");
+  string_eq("0019    LABEL: ", 
+            "........aaaaaa.");
+  string_eq("0019    LA:EL: ", 
+            "........aaa....");
+  string_eq("0019    LABEL: a = b", 
+            "........aaaaaa......");
+  string_eq("0019    LABEL: a = b:c:b", 
+            "........aaaaaa..........");
+  string_eq("0020    LABEL: // LABEL: ", 
+            "........aaaaaa.bbbbbbbbbb");
+}
+
 int main(int argc, char* argv[]) {
   UnitTest tests[] = {
     unit_test(test_Bootstrap),
     unit_test(test_Comments),
-    unit_test(test_Ticket_dd6a19efa5265e7_Date),
+    unit_test(test_Ticket_dd6a19efa5_Date),
+	unit_test(test_Ticket_e8e02762a0_V_Time),
+	unit_test(test_Label),
   };
   return run_tests(tests);
 }
