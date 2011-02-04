@@ -506,8 +506,6 @@ void t24_basic_highlight(termchar *newline, int cols)
   static char line[1024 * 8];
   for (i = 0; i < cols; ++i) {
     char c = newline[i].chr & 0xFF;
-    if (c >= 'a' && c <= 'z')
-      c = toupper(c);
     line[i] = c;
   }
   line[cols] = 0;    

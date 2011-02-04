@@ -142,6 +142,13 @@ void test_Ticket_3359b57f89_INSERT(void **state) {
             ".........aaaaaaa....");
 }
 
+void test_Ticket_11ffe01a8e_Case_Sensitivity(void **state) {
+  string_eq("0001 PROGRAm TRY.1",
+            "..................");
+  string_eq("0003 CRt '111'",
+            ".........aaaaa");
+}
+
 void test_Common(void **state) {
   string_eq("0001 COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LST",
             ".....aaaaaa..bbbbbbbbbbbbbbbbbbbbbb.............................");
@@ -181,6 +188,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_3bfb7be594de7fd6_ON),
     unit_test(test_Ticket_2018f2fd4a6af18b_ON_ERROR),
     unit_test(test_Ticket_3359b57f89_INSERT),
+    unit_test(test_Ticket_11ffe01a8e_Case_Sensitivity),
   };
   return run_tests(tests);
 }
