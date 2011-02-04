@@ -61,6 +61,7 @@ struct token_t tokens[] = {
   /* Operators and functions */
   { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, clRed | ATTR_BOLD, 
     "|"
+    "$INSERT|"
     "ABORT|"
     "ABSS|"
     "ABS|"

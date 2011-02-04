@@ -46,7 +46,7 @@ const char* decode_colors(const termchar* chars, int cols) {
     int color = chars[i].attr;
     if (color == '.') {
       buf[i] = color;
-	  current_color = -1;
+      current_color = -1;
     } else {
       if (current_color != color) {
         current_color = color;
@@ -135,9 +135,16 @@ void test_Ticket_2018f2fd4a6af18b_ON_ERROR(void **state) {
             "........aaaaa.........bb.....................cc.ddddd");
 }
 
+void test_Ticket_3359b57f89_INSERT(void **state) {
+  string_eq("1234 $INSERT abc",
+            ".....aaaaaaa....");
+  string_eq("1234     $INSERT abc",
+            ".........aaaaaaa....");
+}
+
 void test_Common(void **state) {
-  string_eq("0001 COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LIST",
-            ".....aaaaaa..bbbbbbbbbbbbbbbbbbbbbb..............................");
+  string_eq("0001 COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LST",
+            ".....aaaaaa..bbbbbbbbbbbbbbbbbbbbbb.............................");
   string_eq("0001 COMMON /BLOO.COMMON/ B$OO.ISIN.LIST, B$OO.SM.LIST",
             ".....aaaaaa..bbbbbbbbbbb..............................");
 }
@@ -173,6 +180,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_0a8c43b9ed_AND_OR),
     unit_test(test_Ticket_3bfb7be594de7fd6_ON),
     unit_test(test_Ticket_2018f2fd4a6af18b_ON_ERROR),
+    unit_test(test_Ticket_3359b57f89_INSERT),
   };
   return run_tests(tests);
 }
