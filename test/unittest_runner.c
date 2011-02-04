@@ -130,6 +130,11 @@ void test_Ticket_3bfb7be594de7fd6_ON(void **state) {
             "........aaaaaaaa...........bb........cccc");
 }
 
+void test_Ticket_2018f2fd4a6af18b_ON_ERROR(void **state) {
+  string_eq("0186    WRITE R.RECON TO F.RECON, V.RECON.ID ON ERROR",
+            "........aaaaa.........bb.....................cc.ddddd");
+}
+
 void test_Common(void **state) {
   string_eq("0001 COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LIST",
             ".....aaaaaa..bbbbbbbbbbbbbbbbbbbbbb..............................");
@@ -167,6 +172,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_cce4f3f8dc1b52fc_F_IN_FILE),
     unit_test(test_Ticket_0a8c43b9ed_AND_OR),
     unit_test(test_Ticket_3bfb7be594de7fd6_ON),
+    unit_test(test_Ticket_2018f2fd4a6af18b_ON_ERROR),
   };
   return run_tests(tests);
 }

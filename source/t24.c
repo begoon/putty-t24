@@ -167,6 +167,7 @@ struct token_t tokens[] = {
     "EQUATE|"
     "EQU|"
     "EQ|"
+    "ERROR|"
     "EREPLACE|"
     "EXECUTE|"
     "EXIT|"
