@@ -430,7 +430,7 @@ struct token_t tokens[] = {
   /* Numeric constant */
   { "^((\\+|-|)[0-9]+(\\.[0-9]+|))",
     1, -1, clGreen | ATTR_BOLD, NULL },
-	
+
   /* Skip current token */
   { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, -1, NULL }
 };
