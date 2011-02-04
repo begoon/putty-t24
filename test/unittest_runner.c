@@ -79,6 +79,8 @@ void test_Comments(void **state) {
   string_eq("1234 VAR // comments", ".........aaaaaaaaaaa");
   string_eq("1234 A = '// string'  // slash/shash comment", 
             ".........aaaaaaaaaaa..bbbbbbbbbbbbbbbbbbbbbb");
+  string_eq("0052      YAC.BAL *= -1",
+            ".......................");
 }
 
 void test_Ticket_dd6a19efa5_DATE(void **state) {
