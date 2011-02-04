@@ -487,10 +487,7 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
   }
 
   for (i = offset; i < offset + size; ++i) {
-    const int cursor_mask = TATTR_ACTCURS | TATTR_PASCURS | TATTR_RIGHTCURS;
-    int cursor = newline[i].attr & cursor_mask;
-    newline[i].attr = tokens[n].color;
-    newline[i].attr |= cursor;
+    newline[i].attr = (newline[i].attr & ~ATTR_FGMASK) | tokens[n].color;
   }
   memset(re_tokens[n]->startp[group], 0xff, size);
   return next;
