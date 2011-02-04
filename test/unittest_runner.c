@@ -149,6 +149,11 @@ void test_Ticket_11ffe01a8e_Case_Sensitivity(void **state) {
             ".........aaaaa");
 }
 
+void test_Generic(void **state) {
+  string_eq("0001 PROGRAM TRY.1",
+            ".....aaaaaaa......");
+}
+
 void test_Common(void **state) {
   string_eq("0001 COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LST",
             ".....aaaaaa..bbbbbbbbbbbbbbbbbbbbbb.............................");
@@ -179,6 +184,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Comments),
     unit_test(test_Label),
     unit_test(test_Common),
+    unit_test(test_Generic),
     unit_test(test_Ticket_dd6a19efa5_DATE),
     unit_test(test_Ticket_e8e02762a0_V_TIME),
     unit_test(test_Ticket_0bcfac1fb6_READNEXT_FROM),
