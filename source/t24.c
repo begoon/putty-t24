@@ -54,8 +54,8 @@ struct token_t tokens[] = {
   /* System variable @NAME */
   { "^(@[a-zA-Z_\\.]+)", 1, -1, clCyan, NULL },
 
-  /* Common */
-  { "^COMMON[ \t]+/[ \t]*([a-zA-Z_\\$][a-zA-Z0-9_\\.$]*)[ \t]*/", 
+  /* Common block */
+  { "^/[ \t]*([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$, \t]*)[ \t]*/", 
     1, -1, clRed | ATTR_BOLD, NULL },
 
   /* Operators and functions */
