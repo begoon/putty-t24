@@ -285,6 +285,7 @@ struct token_t tokens[] = {
     "OBJEXCALLBACK|"
     "OCONVS|"
     "OCONV|"
+    "ON|"
     "ONGOTO|"
     "OPENDEV|"
     "OPENINDEX|"

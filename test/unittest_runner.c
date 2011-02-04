@@ -120,9 +120,14 @@ void test_Ticket_cce4f3f8dc1b52fc_F_IN_FILE(void **state) {
             ".........aaaaaaa.....................bb...........cccc");
 }
 
-void test_Ticket_0a8c43b9ed_ON_AND(void **state) {
+void test_Ticket_0a8c43b9ed_AND_OR(void **state) {
   string_eq("0003 IF PAR.1 EQ 1 AND (PAR.2 GT 3 OR PAR.2 LE 0) THEN", 
             ".....aa.......bb.c.ddd........ee.f.gg.......hh.i..jjjj");
+}
+
+void test_Ticket_3bfb7be594de7fd6_ON(void **state) {
+  string_eq("0053    WRITESEQ RECON.REC ON F.FILE ELSE", 
+            "........aaaaaaaa...........bb........cccc");
 }
 
 void test_Label(void **state) {
@@ -152,7 +157,8 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_0bcfac1fb6_READNEXT_FROM),
     unit_test(test_Ticket_3f3645bab6_UNTIL_DO_REPEAT),
     unit_test(test_Ticket_cce4f3f8dc1b52fc_F_IN_FILE),
-    unit_test(test_Ticket_0a8c43b9ed_ON_AND),
+    unit_test(test_Ticket_0a8c43b9ed_AND_OR),
+    unit_test(test_Ticket_3bfb7be594de7fd6_ON),
   };
   return run_tests(tests);
 }
