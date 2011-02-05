@@ -172,6 +172,19 @@ void test_Common(void **state) {
             ".....aaaaaa..bbbbbbbbbbb..............................");
 }
 
+void test_Numbers(void **state) {
+  string_eq("0001 A = 10",
+            ".........aa");
+  string_eq("0002 A = +10",
+            ".........aaa");
+  string_eq("0002 A = + 10",
+            "...........aa");
+  string_eq("0002 A = -10",
+            ".........aaa");
+  string_eq("0002 A = - 10",
+            "...........aa");
+}
+
 void test_Label(void **state) {
   string_eq("0017  LABEL:", 
             "......aaaaaa");
@@ -195,6 +208,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Comments),
     unit_test(test_Label),
     unit_test(test_Common),
+    unit_test(test_Numbers),
     unit_test(test_Generic),
     unit_test(test_Ticket_dd6a19efa5_DATE),
     unit_test(test_Ticket_e8e02762a0_V_TIME),
