@@ -76,11 +76,20 @@ void test_Comments(void **state) {
   string_eq("1234 *--------", ".....aaaaaaaaa");
   string_eq("1234   *--------", ".......aaaaaaaaa");
   string_eq("1234 VAR ;* comments", ".........aaaaaaaaaaa");
+  string_eq("1234 VAR  * comments", "..........aaaaaaaaaa");
   string_eq("1234 VAR // comments", ".........aaaaaaaaaaa");
   string_eq("1234 A = '// string'  // slash/shash comment", 
             ".........aaaaaaaaaaa..bbbbbbbbbbbbbbbbbbbbbb");
+  string_eq("1234 REM rem comment",
+            ".....aaaaaaaaaaaaaaa");
+  string_eq("1234   REM rem comment",
+            ".......aaaaaaaaaaaaaaa");
   string_eq("0052      YAC.BAL *= -1",
-            ".......................");
+            ".....................aa");
+  string_eq("0053      YAC.BAL *=",
+            "....................");
+  string_eq("0053      YAC.BAL *",
+            "..................a");
 }
 
 void test_Ticket_dd6a19efa5_DATE(void **state) {

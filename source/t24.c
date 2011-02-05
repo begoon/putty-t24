@@ -26,8 +26,8 @@ struct token_t {
 };
 
 struct token_t tokens[] = {
-  /* Entire line comment */
-  { "^[ \t]*((\\*|!|//).*)", 1, -1, clYellow, NULL },
+  /* Comments */
+  { "^(((;|)\\*([^=]|$)|!|//|REM).*)", 1, -1, clYellow, NULL },
 
   /* Double quoted string */
   { "^(\"[^\"]*\")", 1, -1, clYellow | ATTR_BOLD, NULL },
@@ -37,9 +37,6 @@ struct token_t tokens[] = {
 
   /* Slash quoted string */
   { "^(\\\\[^\\\\\]*\\\\)", 1, -1, clYellow | ATTR_BOLD, NULL },
-
-  /* Ending comment */
-  { "^((;\\*|//).*)$", 1, -1, clYellow, NULL },
 
   /* Label */
   { "^([a-zA-Z0-9_\\.]+\\:)", 1, 0, clBlue | ATTR_BOLD, NULL },
@@ -475,7 +472,7 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
     char word[size + 1];
     memcpy(word, re_tokens[n]->startp[group], size);
     word[size] = 0;
-    printf("token: [%s]\n", word);
+    fprintf(stderr, "token: [%s]\n", word);
   }
 #endif
   
