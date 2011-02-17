@@ -199,6 +199,14 @@ void test_Hex(void **state) {
             "...........");
   string_eq("0001 20202020",
             ".............");
+  string_eq("0001 20202020   ",
+            "................");
+  string_eq("0001 20202020   X",
+            ".....aaaaaaaa....");
+  string_eq("0001 2",
+            ".....a");
+  string_eq("0001 2 ",
+            ".....a.");
 }
 
 void test_Numbers(void **state) {

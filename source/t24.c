@@ -499,13 +499,23 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
 int t24_is_jed_hex_line(termchar *newline, int cols, int prefix_sz)
 {
   int j;
-  int hex_count = 0;
+  int hex_count = 0, space_count = 0;
   for (j = prefix_sz; j < cols; ++j) {
     int c = newline[j].chr & 0xff;
     if (isxdigit(c))
       hex_count += 1;
+    else
+      break;
   }
-  return (hex_count + prefix_sz) == cols;
+  if (hex_count & 1) return 0;
+  for (; j < cols; ++j) {
+    int c = newline[j].chr & 0xff;
+    if (c == ' ')
+      space_count += 1;
+    else
+      break;
+  }
+  return (prefix_sz + hex_count + space_count) == cols;
 }
 
 void t24_basic_highlight(termchar *newline, int cols, int jed_prefix_length) 
