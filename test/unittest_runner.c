@@ -10,12 +10,11 @@ void test_Bootstrap(void **state) {
   assert_int_equal(0LL, 0LL);
 }
 
-
 void modalfatalbox(char *fmt, ...) {}
 
-void t24_basic_highlight(termchar *newline, int cols);
+void t24_basic_highlight(termchar *newline, int cols, int jed_prefix_length);
 
-termline *newline(const char* chars) {
+termline *alloc_newline(const char* chars) {
   int cols = strlen(chars);
   termline *line;
   int j;
@@ -35,6 +34,14 @@ void freeline(termline *line) {
     sfree(line->chars);
     sfree(line);
   }
+}
+
+termline* newline(const char* chars) {
+  static termline* line = 0;
+  if (line)
+    freeline(line);
+  line = alloc_newline(chars);
+  return line;
 }
 
 const char* decode_colors(const termchar* chars, int cols) {
@@ -61,8 +68,9 @@ const char* decode_colors(const termchar* chars, int cols) {
 
 const char* syntax(const char *chars) {
   size_t sz = strlen(chars);
-  termline* line = newline(chars);
-  t24_basic_highlight(line->chars, sz);
+  termline* line = alloc_newline(chars);
+  int jed_prefix_length = t24_is_jed_line(line->chars, sz);
+  t24_basic_highlight(line->chars, sz, jed_prefix_length);
   const char* result = decode_colors(line->chars, sz);
   freeline(line);
   return result;
@@ -160,9 +168,18 @@ void test_Ticket_11ffe01a8e_Case_Sensitivity(void **state) {
             ".........aaaaa");
 }
 
-void test_Ticket_f3edb7f0f64d34fa_CAPTURING(void *state) {
+void test_Ticket_f3edb7f0f64d34fa_CAPTURING(void **state) {
   string_eq("0014 EXECUTE \"ls\" CAPTURING DirListing",
             ".....aaaaaaa.bbbb.ccccccccc...........");
+}
+
+void test_Ticket_2f276877e490b371_Pluses_Line_number(void **state) {
+  string_eq("++++   GOSUB GET.UNC.AMOUNT   ;* Comments",
+            ".......aaaaa..................bbbbbbbbbbb");
+  string_eq("++++++   GOSUB GET.UNC.AMOUNT   ;* Comments",
+            ".........aaaaa..................bbbbbbbbbbb");
+  string_eq("+++   GOSUB GET.UNC.AMOUNT   ;* Comments",
+            "........................................");
 }
 
 void test_Generic(void **state) {
@@ -175,6 +192,13 @@ void test_Common(void **state) {
             ".....aaaaaa..bbbbbbbbbbbbbbbbbbbbbb.............................");
   string_eq("0001 COMMON /BLOO.COMMON/ B$OO.ISIN.LIST, B$OO.SM.LIST",
             ".....aaaaaa..bbbbbbbbbbb..............................");
+}
+
+void test_Hex(void **state) {
+  string_eq("0001 ABCDEF",
+            "...........");
+  string_eq("0001 20202020",
+            ".............");
 }
 
 void test_Numbers(void **state) {
@@ -207,6 +231,34 @@ void test_Label(void **state) {
             "........aaaaaa.bbbbbbbbbb");
 }
 
+void test_newline(void **state) {
+  termline* line = newline("1000 X");
+  assert_int_equal('1', line->chars[0].chr & 0xff);
+  assert_int_equal('0', line->chars[1].chr & 0xff);
+  assert_int_equal('0', line->chars[2].chr & 0xff);
+  assert_int_equal('0', line->chars[3].chr & 0xff);
+  assert_int_equal(' ', line->chars[4].chr & 0xff);
+  assert_int_equal('X', line->chars[5].chr & 0xff);
+}
+
+#define assert_jed_line(line) t24_is_jed_line(newline(line)->chars, strlen(line))
+
+void test_t24_is_jed_line(void **state) {
+  assert_int_equal(0, assert_jed_line(""));
+  assert_int_equal(0, assert_jed_line("100"));
+  assert_int_equal(0, assert_jed_line("+++"));
+  assert_int_equal(4, assert_jed_line("1000"));
+  assert_int_equal(5, assert_jed_line("1000 X"));
+  assert_int_equal(4, assert_jed_line("++++"));
+  assert_int_equal(6, assert_jed_line("100000"));
+  assert_int_equal(7, assert_jed_line("100000 "));
+  assert_int_equal(7, assert_jed_line("100000 X"));
+  assert_int_equal(6, assert_jed_line("++++++"));
+  assert_int_equal(7, assert_jed_line("++++++ "));
+  assert_int_equal(7, assert_jed_line("++++++ X"));
+  assert_int_equal(7, assert_jed_line("++++++ ABCDEF"));
+}
+
 int main(int argc, char* argv[]) {
   UnitTest tests[] = {
     unit_test(test_Bootstrap),
@@ -215,6 +267,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Common),
     unit_test(test_Numbers),
     unit_test(test_Generic),
+    unit_test(test_Hex),
     unit_test(test_Ticket_dd6a19efa5_DATE),
     unit_test(test_Ticket_e8e02762a0_V_TIME),
     unit_test(test_Ticket_0bcfac1fb6_READNEXT_FROM),
@@ -226,6 +279,9 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_3359b57f89_INSERT),
     unit_test(test_Ticket_11ffe01a8e_Case_Sensitivity),
     unit_test(test_Ticket_f3edb7f0f64d34fa_CAPTURING),
+    unit_test(test_Ticket_2f276877e490b371_Pluses_Line_number),
+    unit_test(test_newline),
+    unit_test(test_t24_is_jed_line),
   };
   return run_tests(tests);
 }

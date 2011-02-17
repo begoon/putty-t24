@@ -4897,22 +4897,13 @@ static void do_paint(Terminal *term, Context ctx, int may_optimise)
 	term->disptext[i]->lattr = ldata->lattr;
 
 	if (term->cfg.funky_type == FUNKY_T24) {
-	    if (t24_highligh_on)
-		t24_basic_highlight(newline, term->cols);
-	    if (i == 3) {
-		int count = 0;
-		int i;
-		for (i = 0; i < term->cols; ++i) {
-		    if ((newline[i].chr & 0xff) == '-')
-			count += 1;
-		}
-		t24_menu_mode = count > 20;
-	    }
-	    if (i == term->curs.y && term->cols >= 4) {
-		t24_jed_mode = isdigit(newline[0].chr & 0xff) &&
-		               isdigit(newline[1].chr & 0xff) &&
-		               isdigit(newline[2].chr & 0xff) &&
-		               isdigit(newline[3].chr & 0xff);
+	    if (i == 3)
+		t24_menu_mode = t24_is_t24_line(newline, term->cols);
+	    int jed_prefix_size = t24_is_jed_line(newline, term->cols);
+	    if (jed_prefix_size >= 4) {
+		t24_jed_mode = i == term->curs.y;
+		if (t24_highligh_on)
+		    t24_basic_highlight(newline, term->cols, jed_prefix_size);
 	    }
 	}
 

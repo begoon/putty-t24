@@ -496,25 +496,31 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
   return next;
 }
 
-void t24_basic_highlight(termchar *newline, int cols) 
+int t24_is_jed_hex_line(termchar *newline, int cols, int prefix_sz)
+{
+  int j;
+  int hex_count = 0;
+  for (j = prefix_sz; j < cols; ++j) {
+    int c = newline[j].chr & 0xff;
+    if (isxdigit(c))
+      hex_count += 1;
+  }
+  return (hex_count + prefix_sz) == cols;
+}
+
+void t24_basic_highlight(termchar *newline, int cols, int jed_prefix_length) 
 {
   int i;
 
-  const int jed_prefix_length = 5;
+  if (jed_prefix_length < 5) return;
 
-  if (cols < jed_prefix_length) return;
-  
-  static char line[1024 * 8];
-  for (i = 0; i < cols; ++i) {
-    char c = newline[i].chr & 0xFF;
-    line[i] = c;
-  }
-  line[cols] = 0;    
-
-  if (!isdigit(line[0]) || !isdigit(line[1]) || 
-      !isdigit(line[2]) || !isdigit(line[3]) ||
-      !isspace(line[4]))
+  if (t24_is_jed_hex_line(newline, cols, jed_prefix_length))  
     return;
+    
+  static char line[1024 * 8];
+  for (i = 0; i < cols; ++i)
+    line[i] = newline[i].chr & 0xFF;
+  line[cols] = 0;    
 
   if (re_tokens[0] == 0) {
     for (i = 0; i < nb_tokens; ++i)
@@ -534,4 +540,38 @@ void t24_basic_highlight(termchar *newline, int cols)
     }
     if (!found) p += 1;
   }
+}
+
+int t24_is_jed_line(termchar *newline, int cols)
+{
+  int digit_count = 0, plus_count = 0;
+  int j;
+  if (cols < 4) return 0;
+  for (j = 0; j < cols; ++j) {
+    int c = newline[j].chr & 0xff;
+    if (isdigit(c) && plus_count == 0) 
+      digit_count += 1;
+    else if (c == '+' && digit_count == 0) 
+      plus_count += 1;
+    else 
+      break;
+  }
+  j = digit_count | plus_count;
+  if (j && j < cols && (newline[j].chr & 0xff) == ' ')
+    j += 1;
+  return j;
+}
+
+int t24_is_t24_line(termchar *newline, int cols) 
+{
+  int minus_count = 0;
+  int j;
+  for (j = 0; j < cols; ++j) {
+    int c = newline[j].chr & 0xff;
+    if (c == '-') 
+      minus_count += 1;
+    else 
+      break;
+  }
+  return minus_count < 50;
 }
