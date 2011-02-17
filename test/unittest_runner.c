@@ -93,7 +93,7 @@ void test_Comments(void **state) {
   string_eq("1234   REM rem comment",
             ".......aaaaaaaaaaaaaaa");
   string_eq("0052      YAC.BAL *= -1",
-            ".....................aa");
+            "......................a");
   string_eq("0053      YAC.BAL *=",
             "....................");
   string_eq("0053      YAC.BAL *",
@@ -213,11 +213,11 @@ void test_Numbers(void **state) {
   string_eq("0001 A = 10",
             ".........aa");
   string_eq("0002 A = +10",
-            ".........aaa");
+            "..........aa");
   string_eq("0002 A = + 10",
             "...........aa");
   string_eq("0002 A = -10",
-            ".........aaa");
+            "..........aa");
   string_eq("0002 A = - 10",
             "...........aa");
 }
