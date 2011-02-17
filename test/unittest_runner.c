@@ -182,6 +182,15 @@ void test_Ticket_2f276877e490b371_Pluses_Line_number(void **state) {
             "........................................");
 }
 
+void test_Ticket_5aa1f03d4dbecfc4_Plus_Minus_with_numbers(void **state) {
+  string_eq("0003 X = -2", 
+            "..........a");
+  string_eq("0004 A = X - 2", 
+            ".............a");
+  string_eq("0005 B = X-2", 
+            "...........a");
+}
+
 void test_Generic(void **state) {
   string_eq("0001 PROGRAM TRY.1",
             ".....aaaaaaa......");
@@ -288,6 +297,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_11ffe01a8e_Case_Sensitivity),
     unit_test(test_Ticket_f3edb7f0f64d34fa_CAPTURING),
     unit_test(test_Ticket_2f276877e490b371_Pluses_Line_number),
+    unit_test(test_Ticket_5aa1f03d4dbecfc4_Plus_Minus_with_numbers),
     unit_test(test_newline),
     unit_test(test_t24_is_jed_line),
   };
