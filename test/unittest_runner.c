@@ -160,6 +160,11 @@ void test_Ticket_11ffe01a8e_Case_Sensitivity(void **state) {
             ".........aaaaa");
 }
 
+void test_Ticket_f3edb7f0f64d34fa_CAPTURING(void *state) {
+  string_eq("0014 EXECUTE \"ls\" CAPTURING DirListing",
+            ".....aaaaaaa.bbbb.ccccccccc...........");
+}
+
 void test_Generic(void **state) {
   string_eq("0001 PROGRAM TRY.1",
             ".....aaaaaaa......");
@@ -220,6 +225,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_2018f2fd4a6af18b_ON_ERROR),
     unit_test(test_Ticket_3359b57f89_INSERT),
     unit_test(test_Ticket_11ffe01a8e_Case_Sensitivity),
+    unit_test(test_Ticket_f3edb7f0f64d34fa_CAPTURING),
   };
   return run_tests(tests);
 }

@@ -84,6 +84,7 @@ struct token_t tokens[] = {
     "BITXOR|"
     "BREAK|"
     "BYTELEN|"
+    "CAPTURING|"
     "CALLC|"
     "CALLJ|"
     "CALLONEXIT|"
