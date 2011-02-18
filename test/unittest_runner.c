@@ -285,6 +285,15 @@ void test_t24_is_jed_line(void **state) {
   assert_int_equal(7, assert_jed_line("++++++ ABCDEF"));
 }
 
+#define assert_t24_line(line) t24_is_t24_line(newline(line)->chars, strlen(line))
+
+void test_t24_is_t24_line(void **) {
+  assert_int_equal(0, assert_t24_line(""));
+  assert_int_equal(0, assert_t24_line("------------------"));
+  assert_int_equal(1, assert_t24_line("----------------------------------------"
+                                      "--------------------"));
+}
+
 int main(int argc, char* argv[]) {
   UnitTest tests[] = {
     unit_test(test_Bootstrap),
@@ -310,6 +319,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_5aa1f03d4dbecfc4_Plus_Minus_with_numbers),
     unit_test(test_newline),
     unit_test(test_t24_is_jed_line),
+    unit_test(test_t24_is_t24_line),
   };
   return run_tests(tests);
 }

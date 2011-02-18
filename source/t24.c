@@ -587,5 +587,5 @@ int t24_is_t24_line(termchar *newline, int cols)
     else 
       break;
   }
-  return minus_count < 50;
+  return minus_count > 50;
 }
