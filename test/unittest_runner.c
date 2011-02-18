@@ -87,42 +87,42 @@ void test_Comments(void **state) {
   string_eq("1234 VAR  * comments", "..........aaaaaaaaaa");
   string_eq("1234 VAR // comments", ".........aaaaaaaaaaa");
   string_eq("1234 A = '// string'  // slash/shash comment", 
-            ".........aaaaaaaaaaa..bbbbbbbbbbbbbbbbbbbbbb");
+            ".......a.bbbbbbbbbbb..cccccccccccccccccccccc");
   string_eq("1234 REM rem comment",
             ".....aaaaaaaaaaaaaaa");
   string_eq("1234   REM rem comment",
             ".......aaaaaaaaaaaaaaa");
   string_eq("0052      YAC.BAL *= -1",
-            "......................a");
+            "..................aa.bc");
   string_eq("0053      YAC.BAL *=",
-            "....................");
+            "..................aa");
   string_eq("0053      YAC.BAL *",
             "..................a");
 }
 
 void test_Ticket_dd6a19efa5_DATE(void **state) {
   string_eq("0029  ENTRIES<1, AC.STE.VALUE.DATE>    = TODAY", 
-            "..............a...............................");
+            "..............a........................b......");
   string_eq("0036  ENTRIES<1, AC.STE.BOOKING.DATE>  = TODAY", 
-            "..............a...............................");
+            "..............a........................b......");
   string_eq("0036  ENTRIES<1, AC.STE.TOOKING DATE>  = TODAY", 
-            "..............a.................bbbb..........");
+            "..............a.................bbbb...c......");
   string_eq("0036 DATE = TODAY", 
-            ".....aaaa........");
+            ".....aaaa.b......");
   string_eq("0036  DATE = TODAY", 
-            "......aaaa........");
+            "......aaaa.b......");
 }
 
 void test_Ticket_e8e02762a0_V_TIME(void **state) {
   string_eq("0017     V.TIME = ''", 
-            "..................aa");
+            "................a.bb");
   string_eq("0034     V.DELTA = TIME() - TIME1", 
-            "...................aaaa..........");
+            ".................a.bbbb...c......");
 }
 
 void test_Ticket_0bcfac1fb6_READNEXT_FROM(void **state) {
   string_eq("0167     READNEXT ID FROM 9 ELSE DONE = 1 ", 
-            ".........aaaaaaaa....bbbb.c.dddd........e.");
+            ".........aaaaaaaa....bbbb.c.dddd......e.f.");
 }
 
 void test_Ticket_3f3645bab6_UNTIL_DO_REPEAT(void **state) {
@@ -184,11 +184,11 @@ void test_Ticket_2f276877e490b371_Pluses_Line_number(void **state) {
 
 void test_Ticket_5aa1f03d4dbecfc4_Plus_Minus_with_numbers(void **state) {
   string_eq("0003 X = -2", 
-            "..........a");
+            ".......a.bc");
   string_eq("0004 A = X - 2", 
-            ".............a");
+            ".......a...b.c");
   string_eq("0005 B = X-2", 
-            "...........a");
+            ".......a..bc");
 }
 
 void test_Generic(void **state) {
@@ -197,6 +197,8 @@ void test_Generic(void **state) {
 }
 
 void test_Common(void **state) {
+  string_eq("0000 A COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LST",
+            ".......aaaaaa.....................................................");
   string_eq("0001 COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LST",
             ".....aaaaaa..bbbbbbbbbbbbbbbbbbbbbb.............................");
   string_eq("0001 COMMON /BLOO.COMMON/ B$OO.ISIN.LIST, B$OO.SM.LIST",
@@ -220,15 +222,22 @@ void test_Hex(void **state) {
 
 void test_Numbers(void **state) {
   string_eq("0001 A = 10",
-            ".........aa");
+            ".......a.bb");
   string_eq("0002 A = +10",
-            "..........aa");
+            ".......a.bcc");
   string_eq("0002 A = + 10",
-            "...........aa");
+            ".......a.b.cc");
   string_eq("0002 A = -10",
-            "..........aa");
+            ".......a.bcc");
   string_eq("0002 A = - 10",
-            "...........aa");
+            ".......a.b.cc");
+}
+
+void test_Relations(void **state) {
+  string_eq("0002 A <> 10",
+            ".......aa.bb");
+  string_eq("0002 A := 10",
+            ".......aa.bb");
 }
 
 void test_Label(void **state) {
@@ -241,9 +250,9 @@ void test_Label(void **state) {
   string_eq("0019    LA:EL: ", 
             "........aaa....");
   string_eq("0019    LABEL: a = b", 
-            "........aaaaaa......");
+            "........aaaaaa...b..");
   string_eq("0019    LABEL: a = b:c:b", 
-            "........aaaaaa..........");
+            "........aaaaaa...b......");
   string_eq("0020    LABEL: // LABEL: ", 
             "........aaaaaa.bbbbbbbbbb");
 }
@@ -283,6 +292,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Label),
     unit_test(test_Common),
     unit_test(test_Numbers),
+    unit_test(test_Relations),
     unit_test(test_Generic),
     unit_test(test_Hex),
     unit_test(test_Ticket_dd6a19efa5_DATE),

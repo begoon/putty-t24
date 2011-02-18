@@ -52,8 +52,8 @@ struct token_t tokens[] = {
   { "^(@[a-zA-Z_\\.]+)", 1, -1, clCyan, NULL },
 
   /* Common block */
-  { "^/[ \t]*([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$, \t]*)[ \t]*/", 
-    1, -1, clRed | ATTR_BOLD, NULL },
+  { "^(/([^\\/]+)/)", 
+    2, 1, clRed | ATTR_BOLD, NULL },
 
   /* Subroutine operators */
   { "^(GOSUB|CALL|RETURN|STOP)", 1, -1, clCyan | ATTR_BOLD, NULL },
@@ -434,6 +434,10 @@ struct token_t tokens[] = {
   { "^([0-9]+(\\.[0-9]+|))",
     1, -1, clGreen | ATTR_BOLD, NULL },
 
+  /* -, +, *, /, = */
+  { "^(-|\\+|\\*|/|=|<>|:=)",
+    1, -1, clGreen, NULL },
+
   /* Skip current token */
   { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, -1, NULL }
 };
@@ -466,7 +470,7 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
   const int size = re_tokens[n]->endp[group] - re_tokens[n]->startp[group];
   assert(size != 0);
 
-  const char* next = re_tokens[n]->endp[group];
+  const char* next = re_tokens[n]->endp[0];
 
 #if 0
   {
