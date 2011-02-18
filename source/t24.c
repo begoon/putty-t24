@@ -580,12 +580,12 @@ int t24_is_t24_line(termchar *newline, int cols)
 {
   int minus_count = 0;
   int j;
-  for (j = 0; j < cols; ++j) {
+  for (j = 1; j < cols; ++j) {
     int c = newline[j].chr & 0xff;
     if (c == '-') 
       minus_count += 1;
     else 
       break;
   }
-  return minus_count > 50;
+  return minus_count > 50 && (newline[0].chr & 0xff) == ' ';
 }

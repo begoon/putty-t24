@@ -290,7 +290,9 @@ void test_t24_is_jed_line(void **state) {
 void test_t24_is_t24_line(void **) {
   assert_int_equal(0, assert_t24_line(""));
   assert_int_equal(0, assert_t24_line("------------------"));
-  assert_int_equal(1, assert_t24_line("----------------------------------------"
+  assert_int_equal(0, assert_t24_line("----------------------------------------"
+                                      "--------------------"));
+  assert_int_equal(1, assert_t24_line(" ---------------------------------------"
                                       "--------------------"));
 }
 
