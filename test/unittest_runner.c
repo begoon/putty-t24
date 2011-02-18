@@ -7,7 +7,7 @@
 #include "t24.h"
 
 void test_Bootstrap(void **state) {
-  assert_int_equal(0LL, 0LL);
+  assert_int_equal(0LL, 0LL); 
 }
 
 void modalfatalbox(char *fmt, ...) {}
