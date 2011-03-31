@@ -38,6 +38,9 @@ struct token_t tokens[] = {
   /* Slash quoted string */
   { "^(\\\\[^\\\\\]*\\\\)", 1, -1, clYellow | ATTR_BOLD, NULL },
 
+  /* Comments ';' */
+  { "^(;.*)", 1, -1, clYellow, NULL },
+
   /* Label */
   { "^([a-zA-Z0-9_\\.]+\\:)", 1, 0, clBlue | ATTR_BOLD, NULL },
 
