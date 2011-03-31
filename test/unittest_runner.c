@@ -82,9 +82,9 @@ void test_Comments(void **state) {
   string_eq("1234 !--------", ".....aaaaaaaaa");
   string_eq("1234   !--------", ".......aaaaaaaaa");
   string_eq("1234 *--------", ".....aaaaaaaaa");
-  string_eq("1234   *--------", ".......aaaaaaaaa");
+  string_eq("1234   *--------", ".....aaaaaaaaaaa");
   string_eq("1234 VAR ;* comments", ".........aaaaaaaaaaa");
-  string_eq("1234 VAR  * comments", "..........aaaaaaaaaa");
+  string_eq("1234 VAR  * comments", "..........a.........");
   string_eq("1234 VAR // comments", ".........aaaaaaaaaaa");
   string_eq("1234 A = '// string'  // slash/shash comment", 
             ".......a.bbbbbbbbbbb..cccccccccccccccccccccc");
@@ -196,6 +196,16 @@ void test_Ticked_55be7a13e4_Star_Equal_comment(void **state) {
             ".......a.bb.ccccccccccccccccc");
   string_eq("0008 A = 2 ; * still comment", 
             ".......a.b.ccccccccccccccccc");
+  string_eq("0011 C = A * B", 
+            ".......a...b..");
+  string_eq("0011    * comments", 
+            ".....aaaaaaaaaaaaa");
+  string_eq("0011 * comments", 
+            ".....aaaaaaaaaa");
+  string_eq("0013 C *= 5", 
+            ".......aa.b");
+  string_eq("0013   C *= 5", 
+            ".........aa.b");
 }
 
 void test_Generic(void **state) {
@@ -205,7 +215,7 @@ void test_Generic(void **state) {
 
 void test_Common(void **state) {
   string_eq("0000 A COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LST",
-            ".......aaaaaa.....................................................");
+            ".......aaaaaa.b......................c............................");
   string_eq("0001 COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LST",
             ".....aaaaaa..bbbbbbbbbbbbbbbbbbbbbb.............................");
   string_eq("0001 COMMON /BLOO.COMMON/ B$OO.ISIN.LIST, B$OO.SM.LIST",

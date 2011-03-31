@@ -26,8 +26,11 @@ struct token_t {
 };
 
 struct token_t tokens[] = {
+  /* Comments '*' */
+  { "^(([\t ]*|)\\*.*$)", 1, 0, clYellow, NULL },
+  
   /* Comments */
-  { "^(((;|)\\*([^=]|$)|!|//|REM).*)", 1, -1, clYellow, NULL },
+  { "^(((;)[\t ]*\\*([^=]|$)|!|//|REM).*)", 1, -1, clYellow, NULL },
 
   /* Double quoted string */
   { "^(\"[^\"]*\")", 1, -1, clYellow | ATTR_BOLD, NULL },
@@ -37,9 +40,6 @@ struct token_t tokens[] = {
 
   /* Slash quoted string */
   { "^(\\\\[^\\\\\]*\\\\)", 1, -1, clYellow | ATTR_BOLD, NULL },
-
-  /* Comments ';' */
-  { "^(;.*)", 1, -1, clYellow, NULL },
 
   /* Label */
   { "^([a-zA-Z0-9_\\.]+\\:)", 1, 0, clBlue | ATTR_BOLD, NULL },
@@ -465,7 +465,7 @@ void t24_log(const char* fmt, ...)
   fclose(f);
 }
 
-static char* t24_basic_color(int n, const char* line, termchar *newline, int index)
+static int t24_basic_color(int n, const char* line, char** end, termchar *newline, int index)
 {
   int i;
   const int group = tokens[n].group;
@@ -473,18 +473,20 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
   const int size = re_tokens[n]->endp[group] - re_tokens[n]->startp[group];
   assert(size != 0);
 
-  const char* next = re_tokens[n]->endp[0];
-
 #if 0
   {
     char word[size + 1];
     memcpy(word, re_tokens[n]->startp[group], size);
     word[size] = 0;
-    fprintf(stderr, "token: [%s]\n", word);
+    fprintf(stderr, "token: [%s], index = %d, %d\n", word, index, tokens[n].index);
   }
 #endif
   
-  if (tokens[n].index != -1 && index != tokens[n].index) return next;
+  *end = NULL;
+  if (tokens[n].index != -1 && index != tokens[n].index)
+    return 0;
+
+  *end = re_tokens[n]->endp[0];
 
   if (tokens[n].values) {
     char word[size + 3];
@@ -492,15 +494,15 @@ static char* t24_basic_color(int n, const char* line, termchar *newline, int ind
     memcpy(word + 1, re_tokens[n]->startp[group], size);
     word[1 + size ] = '|';
     word[1 + size + 1 ] = 0;
-    if (!strstr(tokens[n].values, word)) 
-      return next;
+    if (!strstr(tokens[n].values, word))
+      return 0;
   }
 
   for (i = offset; i < offset + size; ++i) {
     newline[i].attr = (newline[i].attr & ~ATTR_FGMASK) | tokens[n].color;
   }
   memset(re_tokens[n]->startp[group], 0xff, size);
-  return next;
+  return 1;
 }
 
 int t24_is_jed_hex_line(termchar *newline, int cols, int prefix_sz)
@@ -550,12 +552,14 @@ void t24_basic_highlight(termchar *newline, int cols, int jed_prefix_length)
     int found = 0;
     for (i = 0; !found && i < nb_tokens; ++i) {
       if (regexec(re_tokens[i], p)) {
-        p = t24_basic_color(i, p, newline + (p - line), index);
+        char* end = NULL;
+        found = t24_basic_color(i, p, &end, newline + (p - line), index);
         index += 1;
-        found = 1;
+        if (end) p = end;
       }
     }
-    if (!found) p += 1;
+    if (!found)
+      p += 1;
   }
 }
 
