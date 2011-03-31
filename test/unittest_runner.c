@@ -191,7 +191,7 @@ void test_Ticket_5aa1f03d4dbecfc4_Plus_Minus_with_numbers(void **state) {
             ".......a..bc");
 }
 
-void test_Ticked_55be7a13e4_Star_Equal_comment(void **state) {
+void test_Ticket_55be7a13e4_Star_Equal_comment(void **state) {
   string_eq("0007 A = 10 ;* also a comment", 
             ".......a.bb.ccccccccccccccccc");
   string_eq("0008 A = 2 ; * still comment", 
@@ -336,7 +336,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_f3edb7f0f64d34fa_CAPTURING),
     unit_test(test_Ticket_2f276877e490b371_Pluses_Line_number),
     unit_test(test_Ticket_5aa1f03d4dbecfc4_Plus_Minus_with_numbers),
-    unit_test(test_Ticked_55be7a13e4_Star_Equal_comment),
+    unit_test(test_Ticket_55be7a13e4_Star_Equal_comment),
     unit_test(test_newline),
     unit_test(test_t24_is_jed_line),
     unit_test(test_t24_is_t24_line),
