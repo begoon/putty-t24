@@ -208,6 +208,17 @@ void test_Ticket_55be7a13e4_Star_Equal_comment(void **state) {
             ".........aa.b");
 }
 
+void test_Ticket_3ba17ef8f11c682b_Percent_in_name(void **state) {
+  string_eq("0086   L%ANSWER = ''", 
+            "................a.bb");
+  string_eq("0078   IF L%ERR THEN", 
+            ".......aa.......bbbb");
+  string_eq("0088   L%PROMPT = 'aaa'", 
+            "................a.bbbbb");
+  string_eq("0089   CALL TXTINP(L%PROMPT, 8, 12, FM:'Y_N')", 
+            ".......aaaa..................b..cc.....ddddd.");
+}
+
 void test_Generic(void **state) {
   string_eq("0001 PROGRAM TRY.1",
             ".....aaaaaaa......");
@@ -337,6 +348,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_2f276877e490b371_Pluses_Line_number),
     unit_test(test_Ticket_5aa1f03d4dbecfc4_Plus_Minus_with_numbers),
     unit_test(test_Ticket_55be7a13e4_Star_Equal_comment),
+    unit_test(test_Ticket_3ba17ef8f11c682b_Percent_in_name),
     unit_test(test_newline),
     unit_test(test_t24_is_jed_line),
     unit_test(test_t24_is_t24_line),

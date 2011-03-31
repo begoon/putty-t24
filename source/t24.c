@@ -442,7 +442,7 @@ struct token_t tokens[] = {
     1, -1, clGreen, NULL },
 
   /* Skip current token */
-  { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, -1, NULL }
+  { "^([a-zA-Z_\\$\\%][a-zA-Z0-9_\\.\\$\\%]*)", 1, -1, -1, NULL }
 };
 
 static const int nb_tokens = sizeof(tokens) / sizeof(*tokens);
@@ -498,8 +498,10 @@ static int t24_basic_color(int n, const char* line, char** end, termchar *newlin
       return 0;
   }
 
-  for (i = offset; i < offset + size; ++i) {
-    newline[i].attr = (newline[i].attr & ~ATTR_FGMASK) | tokens[n].color;
+  if (tokens[n].color != -1) {
+    for (i = offset; i < offset + size; ++i) {
+      newline[i].attr = (newline[i].attr & ~ATTR_FGMASK) | tokens[n].color;
+    }
   }
   memset(re_tokens[n]->startp[group], 0xff, size);
   return 1;
