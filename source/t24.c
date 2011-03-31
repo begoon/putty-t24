@@ -58,8 +58,11 @@ struct token_t tokens[] = {
   { "^(/([^\\/]+)/)", 
     2, 1, clRed | ATTR_BOLD, NULL },
 
+  /* Subroutine operators (CALL) */
+  { "^((CALL)[\t ])", 2, -1, clCyan | ATTR_BOLD, NULL },
+    
   /* Subroutine operators */
-  { "^(GOSUB|CALL|RETURN|STOP)", 1, -1, clCyan | ATTR_BOLD, NULL },
+  { "^(GOSUB|RETURN|STOP)", 1, -1, clCyan | ATTR_BOLD, NULL },
   
   /* Operators and functions */
   { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, clRed | ATTR_BOLD, 
@@ -442,7 +445,7 @@ struct token_t tokens[] = {
     1, -1, clGreen, NULL },
 
   /* Skip current token */
-  { "^([a-zA-Z_\\$\\%][a-zA-Z0-9_\\.\\$\\%]*)", 1, -1, -1, NULL }
+  { "^([a-zA-Z_\\$\\%\\.][a-zA-Z0-9_\\.\\$\\%\\.]*)", 1, -1, -1, NULL }
 };
 
 static const int nb_tokens = sizeof(tokens) / sizeof(*tokens);
