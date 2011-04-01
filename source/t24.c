@@ -30,7 +30,7 @@ struct token_t tokens[] = {
   { "^(([\t ]*|)\\*.*$)", 1, 0, clYellow, NULL },
   
   /* Comments */
-  { "^(((;)[\t ]*\\*([^=]|$)|!|//|REM).*)", 1, -1, clYellow, NULL },
+  { "^(((;)[\t ]*\\*([^=]|$)|!|//|REM[\t ]).*)", 1, -1, clYellow, NULL },
 
   /* Double quoted string */
   { "^(\"[^\"]*\")", 1, -1, clYellow | ATTR_BOLD, NULL },

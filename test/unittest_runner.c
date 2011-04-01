@@ -92,6 +92,8 @@ void test_Comments(void **state) {
             ".....aaaaaaaaaaaaaaa");
   string_eq("1234   REM rem comment",
             ".......aaaaaaaaaaaaaaa");
+  string_eq("00427   WHILE ENV.MSG:REM.ENV.POS",
+            "........aaaaa....................");
   string_eq("0052      YAC.BAL *= -1",
             "..................aa.bc");
   string_eq("0053      YAC.BAL *=",
