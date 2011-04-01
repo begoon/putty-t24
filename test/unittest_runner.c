@@ -273,6 +273,16 @@ void test_Relations(void **state) {
             ".......aa.bb");
   string_eq("0002 A := 10",
             ".......aa.bb");
+  string_eq("0005 IF A GT B THEN CRT '1'",
+            ".....aa...bb...cccc.ddd.eee");
+  string_eq("0005 IF A <> B THEN CRT '2'",
+            ".....aa...bb...cccc.ddd.eee");
+  string_eq("0005 A<2> = 3",
+            ".......a..b.c");
+  string_eq("0005 IF A < B THEN CRT '3'",
+            ".....aa..bbb..cccc.ddd.eee");
+  string_eq("0005 IF A > B THEN CRT '3'",
+            ".....aa..bbb..cccc.ddd.eee");
 }
 
 void test_Label(void **state) {
