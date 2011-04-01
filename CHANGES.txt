@@ -1,0 +1,10 @@
+2011.04.11, Version 0.60.T24.07.0
+---------------------------------
+
+Bug fixes:
+
+[!] "'*=" is highlighted incorrectly
+[!] Wrong highlighting if a keyword is a part of the name with '%' as a delimiter
+[!] Wrong highlighting when SUBROUTINE is a part of the name
+[!] REM is a comment only when there is a blank afterwards
+[!] Less/Greater operator are not highlighted
