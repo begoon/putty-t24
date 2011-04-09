@@ -251,6 +251,29 @@ void test_Generic(void **state) {
             ".....aaaaaaa......");
 }
 
+void test_Execution_control(void **state) {
+  string_eq("0001   GOSUB xxx",
+            ".......aaaaa....");
+  string_eq("0001   GOSUB xxx ",
+            ".......aaaaa.....");
+  string_eq("0001   RETURN",
+            ".......aaaaaa");
+  string_eq("0001   RETURN ",
+            ".......aaaaaa.");
+  string_eq("0001   STOP",
+            ".......aaaa");
+  string_eq("0001   STOP ",
+            ".......aaaa.");
+  string_eq("0001   GOTO xxx",
+            ".......aaaa....");
+  string_eq("0001   GOTO xxx ",
+            ".......aaaa.....");
+  string_eq("0001   EXECUTE xxx",
+            ".......aaaaaaa....");
+  string_eq("0001   EXECUTE xxx ",
+            ".......aaaaaaa.....");
+}
+
 void test_Common(void **state) {
   string_eq("0000 A COMMON /BLOO.COMMON, ONE , TWO/ B$OO.ISIN.LIST, B$OO.SM.LST",
             ".......aaaaaa.b......................c............................");
@@ -389,6 +412,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_b1934b4f87b4b5e0_Subroutine_in_name),
     unit_test(test_Ticket_84e4f7ccaacbf303_Return_in_name),
     unit_test(test_Ticket_d107ffd1a45fa984_Great_equal),
+    unit_test(test_Execution_control),
     unit_test(test_newline),
     unit_test(test_t24_is_jed_line),
     unit_test(test_t24_is_t24_line),

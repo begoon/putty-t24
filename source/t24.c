@@ -61,6 +61,9 @@ struct token_t tokens[] = {
   /* Subroutine operators (CALL) */
   { "^((CALL)[\t ])", 2, -1, clCyan | ATTR_BOLD, NULL },
     
+  /* Subroutine operators */
+  { "^(GOSUB|RETURN|STOP|GOTO|EXECUTE)([\t ]|$)", 1, -1, clCyan | ATTR_BOLD, NULL },
+  
   /* Operators and functions */
   { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, clRed | ATTR_BOLD, 
     "|"
@@ -174,7 +177,6 @@ struct token_t tokens[] = {
     "EQ|"
     "ERROR|"
     "EREPLACE|"
-    "EXECUTE|"
     "EXIT|"
     "EXP|"
     "EXTRACT|"
@@ -205,8 +207,6 @@ struct token_t tokens[] = {
     "GETX|"
     "GET|"
     "GE|"
-    "GOSUB|"
-    "GOTO|"
     "GROUP|"
     "GT|"
     "HEADINGE|"
@@ -345,7 +345,6 @@ struct token_t tokens[] = {
     "REMOVE|"
     "REPEAT|"
     "REPLACE|"
-    "RETURN|"
     "REWIND|"
     "RIGHT|"
     "RND|"
@@ -378,7 +377,6 @@ struct token_t tokens[] = {
     "SSUB|"
     "STATUS|"
     "STEP|"
-    "STOP|"
     "STRS|"
     "STR|"
     "SUBROUTINE|"
@@ -433,9 +431,6 @@ struct token_t tokens[] = {
     "XTD|"
   },
 
-  /* Subroutine operators */
-  { "^(GOSUB|RETURN|STOP)", 1, -1, clCyan | ATTR_BOLD, NULL },
-  
   /* Numeric constant */
   { "^([0-9]+(\\.[0-9]+|))",
     1, -1, clGreen | ATTR_BOLD, NULL },
