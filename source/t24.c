@@ -61,9 +61,6 @@ struct token_t tokens[] = {
   /* Subroutine operators (CALL) */
   { "^((CALL)[\t ])", 2, -1, clCyan | ATTR_BOLD, NULL },
     
-  /* Subroutine operators */
-  { "^(GOSUB|RETURN|STOP)", 1, -1, clCyan | ATTR_BOLD, NULL },
-  
   /* Operators and functions */
   { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, clRed | ATTR_BOLD, 
     "|"
@@ -436,6 +433,9 @@ struct token_t tokens[] = {
     "XTD|"
   },
 
+  /* Subroutine operators */
+  { "^(GOSUB|RETURN|STOP)", 1, -1, clCyan | ATTR_BOLD, NULL },
+  
   /* Numeric constant */
   { "^([0-9]+(\\.[0-9]+|))",
     1, -1, clGreen | ATTR_BOLD, NULL },
@@ -445,7 +445,7 @@ struct token_t tokens[] = {
     1, -1, clGreen, NULL },
 
   /* Skip current token */
-  { "^([a-zA-Z_\\$\\%\\.][a-zA-Z0-9_\\.\\$\\%\\.]*)", 1, -1, -1, NULL }
+  { "^([a-zA-Z_\\$\\%][a-zA-Z0-9_\\.\\$\\%\\.]*)", 1, -1, -1, NULL }
 };
 
 static const int nb_tokens = sizeof(tokens) / sizeof(*tokens);
