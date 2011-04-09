@@ -233,6 +233,17 @@ void test_Ticket_84e4f7ccaacbf303_Return_in_name(void **state) {
             ".....................a.bb");
 }
 
+void test_Ticket_d107ffd1a45fa984_Great_equal(void **state) {
+  string_eq("0245    IF PGM.NAME[1,2] >= 'G' BP.NO = 2 ELSE BP.NO = 1",
+            "........aa..........b.c.ddddeee.......f.g.hhhh.......i.j");
+  string_eq("0245    IF PGM.NAME[1,2] => 'G' BP.NO = 2 ELSE BP.NO = 1",
+            "........aa..........b.c.ddddeee.......f.g.hhhh.......i.j");
+  string_eq("0245    IF PGM.NAME[1,2] <= 'G' BP.NO = 2 ELSE BP.NO = 1",
+            "........aa..........b.c.ddddeee.......f.g.hhhh.......i.j");
+  string_eq("0245    IF PGM.NAME[1,2] =< 'G' BP.NO = 2 ELSE BP.NO = 1",
+            "........aa..........b.c.ddddeee.......f.g.hhhh.......i.j");
+}
+
 void test_Generic(void **state) {
   string_eq("0001 PROGRAM TRY.1",
             ".....aaaaaaa......");
@@ -375,6 +386,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_3ba17ef8f11c682b_Percent_in_name),
     unit_test(test_Ticket_b1934b4f87b4b5e0_Subroutine_in_name),
     unit_test(test_Ticket_84e4f7ccaacbf303_Return_in_name),
+    unit_test(test_Ticket_d107ffd1a45fa984_Great_equal),
     unit_test(test_newline),
     unit_test(test_t24_is_jed_line),
     unit_test(test_t24_is_t24_line),
