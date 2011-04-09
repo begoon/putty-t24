@@ -1,4 +1,14 @@
-2011.04.11, Version 0.60.T24.07.0
+2011.04.09, Version 0.60.T24.07.1
+---------------------------------
+
+Bug fixes:
+
+[!] RETURN shouldn't be highlighted in an identifier
+[!] ">=" is not highlighed
+[!] REM shouldn't be a comment when used as a name
+
+
+2011.04.01, Version 0.60.T24.07.0
 ---------------------------------
 
 Bug fixes:
