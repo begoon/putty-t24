@@ -117,6 +117,7 @@ struct token_t tokens[] = {
     "COL1|"
     "COL2|"
     "COLLECTDATA|"
+    "COM|"
     "COMMON|"
     "COMPARE|"
     "CONTINUE|"
