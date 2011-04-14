@@ -63,6 +63,9 @@ struct token_t tokens[] = {
     
   /* Subroutine operators */
   { "^(GOSUB|RETURN|STOP|GOTO|EXECUTE)([\t ]|$)", 1, -1, clCyan | ATTR_BOLD, NULL },
+
+  /* PROGRAM */
+  { "^(PROGRAM)([\t ].*)", 1, -1, clRed | ATTR_BOLD, NULL },
   
   /* Operators and functions */
   { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, clRed | ATTR_BOLD, 

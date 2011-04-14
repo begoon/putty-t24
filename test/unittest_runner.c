@@ -259,6 +259,11 @@ void test_Ticket_d581209a49abc4a1_Common(void **state) {
             "........aaa.bbbbbb.....................ccccc");
 }
 
+void test_Ticket_b37ddad3e7478348_Abss(void **state) {
+  string_eq("0001   PROGRAM ABSS-TEST",
+            ".......aaaaaaa..........");
+}
+
 void test_Generic(void **state) {
   string_eq("0001 PROGRAM TRY.1",
             ".....aaaaaaa......");
@@ -426,6 +431,7 @@ int main(int argc, char* argv[]) {
     unit_test(test_Ticket_84e4f7ccaacbf303_Return_in_name),
     unit_test(test_Ticket_d107ffd1a45fa984_Great_equal),
     unit_test(test_Ticket_d581209a49abc4a1_Common),
+    unit_test(test_Ticket_b37ddad3e7478348_Abss),
     unit_test(test_Execution_control),
     unit_test(test_newline),
     unit_test(test_t24_is_jed_line),
