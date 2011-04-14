@@ -1,3 +1,12 @@
+2011.04.14, Version 0.60.T24.07.3
+---------------------------------
+
+Bug fixes:
+
+[!] ABSS should not be highlighted in PROGRAM
+[!] COM should be interpreted as COMMON
+
+
 2011.04.09, Version 0.60.T24.07.2
 ---------------------------------
 
