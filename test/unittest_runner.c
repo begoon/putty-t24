@@ -262,6 +262,12 @@ void test_Ticket_d581209a49abc4a1_Common(void **state) {
 void test_Ticket_b37ddad3e7478348_Abss(void **state) {
   string_eq("0001   PROGRAM ABSS-TEST",
             ".......aaaaaaa..........");
+  string_eq("0001   SUBROUTINE ABSS-TEST",
+            ".......aaaaaaaaaa..........");
+  string_eq("0001   GOSUB ABSS-TEST",
+            ".......aaaaa..........");
+  string_eq("0001   ABSS-TEST:",
+            ".......aaaaaaaaaa");
 }
 
 void test_Ticket_a8f2fc089e9faa6f_Hash(void **state) {
@@ -282,7 +288,7 @@ void test_Execution_control(void **state) {
   string_eq("0001   RETURN",
             ".......aaaaaa");
   string_eq("0001   RETURN ",
-            ".......aaaaaa.");
+            ".......aaaaaaa");
   string_eq("0001   STOP",
             ".......aaaa");
   string_eq("0001   STOP ",

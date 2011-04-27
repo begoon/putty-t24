@@ -42,7 +42,7 @@ struct token_t tokens[] = {
   { "^(\\\\[^\\\\\]*\\\\)", 1, -1, clYellow | ATTR_BOLD, NULL },
 
   /* Label */
-  { "^([a-zA-Z0-9_\\.]+\\:)", 1, 0, clBlue | ATTR_BOLD, NULL },
+  { "^([a-zA-Z0-9_\\.-]+\\:)", 1, 0, clBlue | ATTR_BOLD, NULL },
 
   /* System variable */
   { "^(@\\([a-zA-Z0-9_\\.\\$]+\\))", 1, -1, clCyan, NULL },
@@ -61,11 +61,12 @@ struct token_t tokens[] = {
   /* Subroutine operators (CALL) */
   { "^((CALL)[\t ])", 2, -1, clCyan | ATTR_BOLD, NULL },
     
-  /* Subroutine operators */
-  { "^(GOSUB|RETURN|STOP|GOTO|EXECUTE)([\t ]|$)", 1, -1, clCyan | ATTR_BOLD, NULL },
+  /* Execution control operators */
+  { "^(RETURN([\t ]+|$)|STOP|EXECUTE)", 1, -1, clCyan | ATTR_BOLD, NULL },
+  { "^(GOSUB|GOTO)[\t ]+[^\t ]+", 1, -1, clCyan | ATTR_BOLD, NULL },
 
-  /* PROGRAM */
-  { "^(PROGRAM)([\t ].*)", 1, -1, clRed | ATTR_BOLD, NULL },
+  /* PROGRAM, SUBROUTINE */
+  { "^(PROGRAM|SUBROUTINE)([\t ].*)", 1, -1, clRed | ATTR_BOLD, NULL },
   
   /* Operators and functions */
   { "^([a-zA-Z_\\$][a-zA-Z0-9_\\.\\$]*)", 1, -1, clRed | ATTR_BOLD, 
