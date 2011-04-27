@@ -1,3 +1,13 @@
+2011.04.14, Version 0.60.T24.07.4
+---------------------------------
+
+Bug fixes:
+
+[!] Hash '#' is not highlighted
+[!] ABSS is highlighted in label, GOSUB and SUBROUTINE
+
+
+
 2011.04.14, Version 0.60.T24.07.3
 ---------------------------------
 
