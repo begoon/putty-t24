@@ -440,7 +440,7 @@ struct token_t tokens[] = {
     1, -1, clGreen | ATTR_BOLD, NULL },
 
   /* -, +, *, /, = */
-  { "^(-|\\+|\\*|/|=|<>|:=| < | > | <= | =< | >= | => )",
+  { "^(-|\\+|\\*|/|=|<>|#|:=| < | > | <= | =< | >= | => )",
     1, -1, clGreen, NULL },
 
   /* Skip current token */
