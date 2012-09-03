@@ -1,0 +1,225 @@
+1111 PROGRAM TEST.HILITE ;* Comment
+1233  LOC.ISO := LOC.DEL:CHAR(LOC.I)
+1234  a = \12312 "12312" \ ; @( 10 , A.e )  @(TIME)  @(t, e)
+1111 a = \rter\
+1111 * V.Kazimirchik, 20110119 - for highlighting test purposes only, logic absents absolutely!
+1111 LABEL: CRT
+1234    ! Comment
+1111  * 123
+1232 a10 = 10; b = -10; c = +10; d = - 01; e = + 1; g = 10.1;
+1111 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1111 *$INSERT I_F.OFS.REQUEST.DETAIL
+0000 A = '//not a comment'  // slash/shash comment
+
+1111 COMMON / BLOO.COMMON / B$OO.ISIN.LIST, B$OO.SM.LIST,
+1111 COMMON /BLOO.COMMON/ B$OO.ISIN.LIST, B$OO.SM.LIST,
+1111                   I$IN2SM.UPDATE.FLAG
+1111       
+1111 EQU RMB.NTA.AGREEMENT.NO TO 1,       RMB.NTA.START.DATE TO 2, 
+1111       RMB.NTA.END.DATE TO 3,     RMB.NTA.EXCLUDED.CCY TO 4, 
+1111       RMB.NTA.INCLUDED.CCY TO 5,     RMB.NTA.NETTING.TYPE TO 6, 
+1111       RMB.NTA.ADVICE.FMT TO 7,    RMB.NTA.NETTING.TRANS TO 8, 
+1111       RMB.NTA.PD.AMT.TYPE TO 9,       RMB.NTA.LOCAL.REF TO 10, 
+1111       RMB.NTA.RESERVED.5 TO 11,      RMB.NTA.RESERVED.4 TO 12, 
+1111       RMB.NTA.RESERVED.3 TO 13,      RMB.NTA.RESERVED.2 TO 14, 
+1111       RMB.NTA.RESERVED.1 TO 15,        RMB.NTA.OVERRIDE TO 16, 
+1111       RMB.NTA.RECORD.STATUS TO 17,         RMB.NTA.CURR.NO TO 18, 
+1111       RMB.NTA.INPUTTER TO 19,       RMB.NTA.DATE.TIME TO 20, 
+1111       RMB.NTA.AUTHORISER TO 21,         RMB.NTA.CO.CODE TO 22, 
+1111       RMB.NTA.DEPT.CODE TO 23,    RMB.NTA.AUDITOR.CODE TO 24, 
+1111       RMB.NTA.AUDIT.DATE.TIME TO 25
+
+1111       DIM F(500), N(500), T(500)
+1111       
+1111       GOSUB INIT.VARS
+1111       GOSUB GET.API.LIST
+1111       GOSUB CREATE.FILE
+1111       
+1111       F.FT.NAU.TABLE = ""
+1111       FN.FT.NAU.TABLE = "F.FUNDS.TRANSFER$NAU"
+
+1111       OPEN 'F.OFS.REQUEST.DETAIL' TO F.ORD ELSE 
+1111          CRT 'ERROR OPENING OFS.REQUEST.DETAIL'
+1111          STOP
+1111       END
+1111      
+1111       SELECT F.ORD TO 9
+1111      
+1111       V.DONE = ''
+1111       LOOP
+1111          READNEXT V.ID FROM 9 ELSE BREAK
+1111          READ R.ORD FROM F.ORD, V.ID ELSE
+1111          	CRT 'ERROR READING OFS.REQUEST.DETAIL'
+1111             STOP
+1111          END
+
+1111          GOSUB GET.VAL
+1111          
+1111       REPEAT
+
+1111       FIND 'OD.OR.LIMIT' IN ENQ.SELECTION SETTING V.DUMMY, V.POSN THEN
+1111          IF ENQ.SELECTION<3,V.POSN> NE 'EQ' THEN
+1111             P.LIST = 'ONLY "EQ" COMPARISON IS ALLOWED FOR OD.OR.LIMIT'
+1111             RETURN
+1111          END
+
+1111          V.MODE = ENQ.SELECTION<4,V.POSN>
+1111          BEGIN CASE
+1111             CASE V.MODE = 'O'
+1111                V.INCL.OD = 1
+1111                V.INCL.LIM = 0
+
+1111          	CASE V.MODE EQ \L\
+1111                V.INCL.OD = 0
+1111                V.INCL.LIM = 1
+
+1111             CASE OTHERWISE
+1111                P.LIST = \OD.OR.LIMIT SHOULD BE "O" FOR OVERDRAFTS OR 'L' FOR LIMITS EXCESS\
+1111                RETURN
+
+1111          END CASE
+
+1111       END ELSE   ;* no selection - everything
+1111          V.INCL.OD = 1
+1111          V.INCL.LIM = 1
+1111       END
+
+1111       V.LINE = V.ID : '*' : FMT(V.LIM.NARR<1,V.J>, "15L") : '*' : V.CURR.DAO
+1111       V.LINE := '*' : FMT(V.CUST.NAME, "30L") : '*' : FMT(V.CCY, "3L") :'*' : FMT(V.CLRD.BAL, "19R2,")
+1111       V.LINE := '*' : FMT(V.ACT.BAL, "19R2,") : '*' : FMT(V.OD.EXCESS, "19R2,")
+1111       V.LINE := '*' : R.AC.OD<AC.OD.DATE.FIRST.OD,V.J> : '*' : FMT(V.STATUS, "9R")
+
+
+1111 ***IF NOT(L.ID.FT="FT06256001005215") THEN
+1111 ***   CONTINUE
+1111 ***END
+
+1111       LOC.CMD.ACC = 'SELECT ':LOC.FN.ACC:' WITH @ID LIKE "':LOC.REC.FT<FT.DEBIT.CURRENCY>:'..." AND CATEGORY=16031'
+
+1111 // THAT'S ALSO A COMMENT
+1111 // THAT CAN BE USED IN JBC
+
+1111       L.LOC.REF=""
+1111       R.REC = ''
+1111       CALL RU.API.GET.LOCAL.REF.POS("LD.LOANS.AND.DEPOSITS","LN.STRAH", 
+1111                L.LOC.REF, "YES_OR_NO", 123, 972, R.REC)
+1111       L.LD.LN.STRAH.N = L.LOC.REF<1>
+
+1111       P.NEXT.ID = L.LOC.REF<2>[1,10]
+1111       CALL OCOMO('WRITING ' : P.NEXT.ID : ' TO RTNE HISTORY')
+
+1111       IF R.REC<LD.AMOUNT.INCREASE> > 0 THEN 
+1111          CALL USB.AMT.INCR.TO.PRN
+1111          CALL USB.LD.STMT
+1111       END
+
+1111       L.LOC.REF<-1> = 'FINI'
+
+1111       V.REM.AMT = F(3)<3>[1,3]
+
+
+1111       STOP
+
+1111 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1111 GET.VAL:
+
+1111 	Y.FIELD.VALUE = ''
+1111 	Y.FIELD.NAME = 'QWER'
+1111 	FLD.POS = ""
+1111 	FLD.POS = INDEX(Y.MSG, Y.FIELD.NAME, 1)
+1111 	IF FLD.POS THEN
+1111             FLD.VAL = ''
+1111             LEFT.PART  = Y.MSG[1,FLD.POS-1]
+1111             RIGHT.PART = Y.MSG[FLD.POS,9999]
+1111             FLD.CONT   = RIGHT.PART[',', 1, 1]
+1111             FAR.RIGHT.PART = RIGHT.PART[',', 2, 9999]
+1111             FLD.NAME   = FLD.CONT['=', 1, 1]
+1111             FLD.VAL    = FLD.CONT['=', 2, 1]
+
+1111             Y.FIELD.VALUE = FLD.VAL
+
+1111 	END
+1111    RETURN
+
+1111 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1111 GET.API.LIST:
+
+1111       V.API.LIST = 'CDD' :@FM: 'CDT' :@FM: 'CFQ' :@FM: 'DIETER.DATE' :@FM: 'CALC.ERATE.LOCAL' :@FM: 'CUSTRATE' :@FM: 'EXCHRATE' \
+1111                : @FM : 'MIDDLE.RATE.CONV.CHECK' : @FM : 'OFS.GLOBUS.MANAGER' : @FM : 'OFS.POST.MESSAGE' : @FM : 'OPF' : @FM : 'EB.CLEAR.FILE' \
+1111                : @FM : 'F.DELETE' : @FM : 'F.MATREAD' : @FM : 'F.MATREADU' : @FM : 'F.MATWRITE' : @FM : 'F.LIVE.MATWRITE' : @FM : 'F.READ'     \
+1111                : @FM : 'F.READU' : @FM : 'F.WRITE' : @FM : 'F.LIVE.WRITE' : @FM : 'CACHE.READ' : @FM : 'CACHE.FILE' : @FM : 'EB.READ.PARAMETER' \
+1111                : @FM : 'TRANSACTION.ABORT' : @FM : 'DUP' : @FM : 'FT.NULLS.CHK' : @FM : 'STORE.END.ERROR' : @FM : 'ERR' : @FM : 'STORE.OVERRIDE' \
+1111                : @FM : 'APP.STATIC.TEXT' : @FM : 'TXT' : @FM : 'B.UPDATE.BATCH' : @FM : 'CALCULATE.CHARGE' : @FM : 'EB.GET.ACCT.BALANCE'         \
+1111                : @FM : 'E.GET.LOCAL.AMT' : @FM : 'E.GET.STMT.NARRATIVE' : @FM : 'EB.FORMAT.RATE' : @FM : 'EB.LOCREF.SETUP' : @FM : 'EB.READLIST' \
+1111                : @FM : 'DAS' : @FM : 'EB.ROUND.AMOUNT' : @FM : 'FATAL.ERROR' : @FM : 'GET.NARRATIVE' : @FM : 'GET.SETTLEMENT.DEFAULTS'           \
+1111                : @FM : 'GET.STANDARD.SELECTION.DETS' : @FM : 'LIMIT.CURR.CONV' : @FM : 'LOAD.COMPANY' : @FM : 'PRO' : @FM : 'SC.CALC.YIELD'      \
+1111                : @FM : 'EB.GETFIELD' : @FM : 'EB.FORMAT' : @FM : 'System.getVariable' : @FM : 'System.setVariable' : @FM : 'System.deleteVariable' \
+1111                : @FM : 'System.loadVariables' : @FM : 'LIMIT.CHECK' : @FM : 'LIMIT.GET.PRODUCT' : @FM : 'PST' : @FM : 'PRINTER.ON'              \
+1111                : @FM : 'PRINTER.OFF' : @FM : 'PRINTER.CLOSE' : @FM : 'RG.GET.LOCAL.TEXT' : @FM : 'SPOOL.REPORT' :@FM: 'JULDATE'
+
+1111    RETURN
+
+1111 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1111 CREATE.FILE:
+
+1111    EXECUTE 'CREATE-FILE DATA ' : FN.UTF : ' 1 101'
+
+1111    OPEN FN.UTF TO F.UTF ELSE
+1111       PRINT 'UTF FILE CREATE/OPEN FAILURE'
+1111       RETURN
+1111    END
+
+1111    GOSUB GET.ISO
+1111    
+1111    RETURN
+
+1111 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1111 GET.ISO:
+
+1111    LOC.ISO = CHAR(161)
+1111    FOR LOC.I = 162 TO 172
+1111      LOC.ISO := LOC.DEL:CHAR(LOC.I)
+1111    NEXT LOC.I
+
+1111    FOR LOC.I = 174 TO 247              ;* 173 corresponds to 00AD
+1111      LOC.ISO := LOC.DEL:CHAR(LOC.I)
+1111    NEXT LOC.I
+
+1111    RETURN
+
+1111 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1111 INIT.VARS:
+
+1111    V.J = 1
+1111    FT.DEBIT.CURRENCY = 10
+1111    V.CCY = 'USD'
+1111    Y.MSG='LET THEM ALL SEE'
+1111    AC.OD.DATE.FIRST.OD = '20110101'
+1111    FN.UTF = 'F.UTF.OUT'
+1111    LOC.DEL = \@\
+1111    R.AC.OD = ''
+1111    V.STATUS = 0
+1111    OTHERWISE = 1
+1111    V.ACT.BAL = 123.00
+1111    LOC.FN.ACC = 'FBNK.ACCOUNT'
+1111    V.CLRD.BAL = -0.99
+1111    LOC.REC.FT=""
+1111    V.CURR.DAO=9000000
+1111    V.LIM.NARR=\LIMIT'S NARRATIVE\
+1111    V.OD.EXCESS = 0
+1111    V.CUST.NAME = "JOHN DORY"
+1111    ENQ.SELECTION='ACCOUNT NE 32028 AND CUST.NAME = \"WORLD" CENTER\'
+1111    
+1111    Z = 0
+1111    Z += 1 ; F(Z) = 'OPER.TYPE.SH.NAME'   ; N(Z) = '35.1' ; T(Z) = 'A'
+1111    Z += 1 ; F(Z) = 'XX.OPER.TYPE.NAME'   ; N(Z) = '35'   ; T(Z) = 'A'
+1111    Z += 1 ; F(Z) = 'XX.LOCAL.REF'        ; N(Z) = '35'   ; T(Z) = 'A' ; T(Z)<3> = 'NOINPUT'
+
+1111    LD.AMOUNT.INCREASE = 378
+
+1111    RETURN
+
+1111 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1111 END
