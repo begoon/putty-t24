@@ -1,1 +1,0 @@
-fossil open putty_t24-repo.fossil
